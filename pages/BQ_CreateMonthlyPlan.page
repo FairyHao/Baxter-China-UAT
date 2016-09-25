@@ -1,0 +1,51 @@
+<apex:page controller="BQ_CtrMonthlyPlan" id="Mypage" tabStyle="MonthlyPlan__c">
+	<apex:form id="myform" >
+		<apex:sectionHeader subtitle="新建月计划"  /> 
+		<apex:pageblock id="mypageblock">
+		<table border="0" cellpadding="0" cellspacing="0"> 
+			<tr>
+				<td Style="width: 100px">
+					点击创建按钮： 
+				</td>
+				<td>
+					1.如果所选年月含有月计划，则直接跳转到已生成的月计划
+				</td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td>
+					2.如果所选年月没有月计划，则系统自动创建月计划，抓取上月的拜访次数作为本月的计划次数，
+					     如果本月已经有对应联系人的拜访，则拜访次数作为安排次数，其中完成次数即完成数。
+				</td>
+			</tr>
+		</table>
+		<apex:pageMessages />
+			<table id="mytable" border="0"  align="center"  >
+				<tr >
+					<td Style="font-family: 微软雅黑;font-size: 15px;">
+						月计划日期：
+					</td>
+					<td Style="font-family: 微软雅黑;font-size: 15px;">
+						<apex:selectList size="1" value="{!Year}" >
+         					<apex:selectOptions value="{!ListYears}"/>
+         				</apex:selectList>
+					</td>
+					<td Style="font-family: 微软雅黑;font-size: 15px;">
+						年
+					</td>
+					<td Style="font-family: 微软雅黑;font-size: 15px;">
+						<apex:selectList size="1"  value="{!Month}" >
+         					<apex:selectOptions value="{!ListMonths}"/>
+         				</apex:selectList>
+					</td>
+					<td Style="font-family: 微软雅黑;font-size: 15px;">
+						月
+					</td>
+					<td Style="font-family: 微软雅黑;font-size: 15px;">
+						<apex:commandButton value="创建" action="{!CreateMonthPlay}" reRender="myform"/>
+					</td>
+				</tr>
+			</table>
+		</apex:pageblock>
+	</apex:form>
+</apex:page>

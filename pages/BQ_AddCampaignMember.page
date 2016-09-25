@@ -1,0 +1,102 @@
+<apex:page Controller="BQ_CtrAddCampaignMember" id="mypage" showheader="false">
+    <script>
+        function checkAll(cb)
+        {
+            var inputElem = document.getElementsByTagName("input"); 
+            for(var i=0; i<inputElem.length; i++)
+            {
+                if(inputElem[i].id.indexOf("selectOpt")!=-1)
+                inputElem[i].checked = cb.checked;
+            }
+        }  
+        function ShowDate(Sobj)
+        {
+            var ids = Sobj.id;
+         DatePicker.pickDate(true, ids, false);
+        }
+    </script>
+    <apex:form id="myform">
+        <apex:pageblock id="myblock">
+            <apex:pageMessages />
+            <div align="left" style="font-family: 微软雅黑; font-size: 16px;">添加市场活动成员</div>
+            <div align="left" style="font-family: 微软雅黑; font-size: 13px;">
+            1.代表添加的市场活动成员，提交人默认为当前代表。<br/>
+            2.市场部添加市场活动成员，选择联系人后，自动将所选联系人所属客户下的客户小组成员列出，市场部选择其中一位做为提交人。
+            </div>
+            <hr size= "0" color="#CC9900"  ></hr>
+            <apex:actionFunction action="{!CheckContact}" name="CheckContactJs"/>
+<!--            <apex:actionFunction action="{!getUserlist}" name="getUserlistJs" />-->
+            <apex:pageBlockTable value="{!ListSobjCam}" var="scm" id="mytable"  cellspacing="0" cellpadding="0" border="0">
+                <apex:column Style="width:15px">
+                    <apex:facet name="header">
+                        <input type="checkbox" id="chkall" onclick="checkAll(this)" Style="width:15px"/>
+                    </apex:facet>
+                    <apex:inputCheckbox value="{!scm.IsDelete}" id="selectOpt" Style="width:15px"/>
+                </apex:column>
+                <apex:column headervalue="联系人" Style="width:90px">
+                    <apex:inputField value="{!scm.cm.ContactId}" onchange="CheckContactJs()" Style="width:90px"/>
+                </apex:column>
+                <apex:column headervalue="选择提交人" Style="width:80px" rendered="{!IsMarketing}">
+                    <apex:selectList size="1"  value="{!scm.cm.User__c}">
+                        <apex:selectOptions value="{!scm.UserList}"/>
+                    </apex:selectList>
+                </apex:column>
+                <apex:column headervalue="身份证号"  Style="width:90px">
+                    <apex:OutputField value="{!scm.cm.ID_card__c}"  Style="width:90px" />
+                </apex:column>
+                <apex:column headervalue="手机"  Style="width:90px">
+                    <apex:OutputField value="{!scm.cm.MobilePhone__c}"  Style="width:90px" />
+                </apex:column>
+                <apex:column headervalue="客户名称" Style="width:120px">
+                    <apex:OutputField value="{!scm.cm.V2_Account__c}" Style="width:120px" id="myfield"/>
+<!--                    <apex:inputField value="{!scm.cm.V2_Account__c}" onselect="getUserlistJs()" Style="width:120px" rendered="{!if(IsMarketing,true,false)}"/>-->
+                </apex:column>
+                <apex:column headervalue="出发日期"  Style="width:90px">
+                    <apex:inputText value="{!scm.DepartDate}" id="DepartDate" Style="width:90px" onfocus="ShowDate(this)"/>
+                </apex:column>
+                <apex:column headervalue="出发航班" Style="width:80px">
+                    <apex:inputField value="{!scm.cm.V2_DepartFlight__c}" Style="width:90px"/>
+                </apex:column>
+                <apex:column headervalue="到达日期" Style="width:80px">
+                    <apex:inputText value="{!scm.ArriveDate}" id="ArriveDate" Style="width:90px" onfocus="ShowDate(this)"/>
+                </apex:column>
+                <apex:column headervalue="到达航班" Style="width:80px">
+                    <apex:inputField value="{!scm.cm.V2_ArriveFlight__c}" Style="width:90px"/>
+                </apex:column>
+                <apex:column headervalue="备注" Style="width:120px">
+                    <apex:inputField value="{!scm.cm.V2_Comment__c}" Style="width:120px"/>
+                </apex:column>
+            </apex:pageBlockTable>
+            <table align="left">
+                <tr>
+                    <td>
+                        <apex:commandButton value="+" action="{!AddCampaignMember}"   /> 
+                    </td>
+                    <td>
+                        <apex:commandButton value="删除" action="{!DeleteCampaignMember}" />
+                    </td>
+                    <td>
+                        <apex:commandButton value="保存" action="{!SaveCampaignMember}"  />  
+                    </td>
+<!--                    <td>-->
+<!--                        <apex:commandButton value="返回市场活动" action="{!ReferenceCam}"/>  -->
+<!--                    </td>-->
+                </tr>
+            </table>
+        </apex:pageblock>
+        
+    </apex:form>
+    <script>
+            if({!IsClose})
+            { 
+                CloseWindow(); 
+            }
+            function CloseWindow()
+            {
+                var url = "/"+"{!CampaignIds}";
+                //alert("########"+url);
+                opener.document.location= url;
+                window.close(); 
+            }
+        </script>
+</apex:page>

@@ -1,0 +1,20 @@
+<apex:page standardController="Campaign" extensions="ActivitySurveyController">
+<apex:form >
+<apex:pageBlock title="市场活动问卷调查">
+<div>
+<ul>
+<li>下方文本域即为问卷邮件的正文</li>
+<li>输入问卷的介绍信息和Surveymonkey的调查问卷连接</li>
+<li>单击“发送问卷”按钮，系统会自动将调查问卷发送给市场活动的所有成员</li>
+</ul>
+<apex:outputLabel value="{!Msg}" style="color:red"/>
+</div>
+<b>标题：</b><apex:inputField value="{!history.emailSubject__c}" style="width:70%;margin-bottom: 10px;margin-top:10px;"/>
+<apex:inputField value="{!history.EmailTxt__c}"/>
+<div style="margin-top: 2%" align="center">
+	<apex:commandButton value="发送问卷" action="{!sendEmail}" style="margin-right: 1%" />
+	<apex:commandButton value="返回" action="{!back}"/>
+</div>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

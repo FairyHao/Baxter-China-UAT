@@ -1,0 +1,42 @@
+<!--
+*Amy
+*2015/4/20
+*功能：1.批量翻译不良事件
+-->
+<apex:page controller="AdverseEventTranslationController">
+    <apex:form id="f">
+    	<apex:pageBlock >
+    		 <apex:pageMessages />
+    		 <div align="center" style="font-family: 微软雅黑; font-size: 16px;">不良事件翻译</div>
+    		 <div align="left" style="font-family: 微软雅黑; font-size: 13px;">
+                1.请选择需要翻译的数据导入日期和国内接收日期<br/>
+                2.如果批量翻译，由于数据量大请您操作完毕后稍等一段时间再去查看,完成后您将收到邮件通知。 <br/>
+            </div>
+            
+            <table align="center" cellpadding ="5" border="0">
+            	 <td Style="font-family: 微软雅黑;font-size: 15px;">
+                     <div style='float:left'>导入日期：</div>
+                      <div style='float:left'> 
+                      <div class='requiredInput'>
+                      <div class='requiredBlock'></div>
+                      <apex:inputfield value="{!event.PMO_Date_of_Birth_zh__c}" id="theTextInput"/>
+                      </div>
+                      </div>
+                </td>
+                 <td Style="font-family: 微软雅黑;font-size: 15px;">
+                    <div style='float:left'>国内接收日期：</div>
+                      <div style='float:left'> 
+                      <div class='requiredInput'>
+                      <div class='requiredBlock'></div>
+                      <apex:inputfield value="{!event.PMO_Date_of_administration_zh__c}" id="date2"/>
+                      </div>
+                      </div>
+                 </td>
+                 <td>
+                        <apex:commandButton value=" 翻译 " action="{!Translation}" disabled="{!IsDisable}"/>
+                 </td>
+            </table>
+
+    	</apex:pageBlock>
+    </apex:form>
+</apex:page>

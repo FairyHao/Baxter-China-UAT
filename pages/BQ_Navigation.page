@@ -1,0 +1,64 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="true" Controller="BQ_CtrNavigation">
+<div class="pbBody" id="PendingProcessWorkitemsList_body">
+<apex:form >
+<apex:pagemessages />
+<table class="list" width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody>
+	<tr Style ="{!if(IsCreateMp,"display:block width=100%","display:none")}">
+		<td scope="col" class="noRowsHeader" width="70%">
+		<b>{!Year}年{!Month}月月计划还未生成</b></td>
+		<td  scope="col" class="noRowsHeader" width="30%">
+		<b><a href="/apex/BQ_CreateMonthlyPlan?retURL=%2Fa0R%2Fo&save_new=1&sfdc.override=1" target="_blank">生成</a></b>
+<!--		<apex:commandButton action="{!CreateMonthPlay}" value="确定" />-->
+		</td>
+	</tr>
+	<tr Style ="{!if(IsFillingIn,"display:block width=100%","display:none")}">
+		<td scope="col" class="noRowsHeader" width="70%">
+		<b>{!Year}年{!Month}月月计划还未填写小结</b></td>
+		<td  scope="col" class="noRowsHeader" width="30%">
+		<b><a href="/{!MpId}/e?retURL=%2F{!MpId}" target="_blank">填写</a></b>
+		</td>
+	</tr>
+	<tr Style ="{!if(IsFillingIn1,"display:block width=100%","display:none")}">
+		<td scope="col" class="noRowsHeader" width="70%">
+		<b>{!Year1}年{!Month1}月月计划还未填写小结</b></td>
+		<td  scope="col" class="noRowsHeader" width="30%">
+		<b><a href="/{!MpId}/e?retURL=%2F{!MpId}" target="_blank">填写</a></b>
+		</td>
+	</tr>
+	<tr Style ="{!if(IsArrangementCall,"display:block width=100%","display:none")}">
+		<td scope="col" class="noRowsHeader" width="70%">
+		<b>根据你本月计划拜访次数和月工作日的比率，截止到今日为止，您的拜访次数不够，应创建{!Finishedcall}个，目前为{!ActualFinishedcall}个</b></td>
+		<td  scope="col" class="noRowsHeader" width="30%">
+		<b><a href="/apex/BQ_BulkAddEvents" target="_blank">添加</a></b>
+		</td>
+	</tr>
+	<tr Style ="{!if(IsExpiredCall,"display:block width=100%","display:none")}">
+		<td scope="col" class="noRowsHeader" width="70%">
+		<b>您有{!ExpireFlag}个拜访将在3天后过期</b></td>
+		<td  scope="col" class="noRowsHeader" width="30%">
+		<b><a href="/007" target="_blank">查看</a></b>
+		</td>
+	</tr>
+	<tr Style="{!if(IsCreateOpp,"display:block width=100%","display:none")}">
+		<td scope="col" class="noRowsHeader" width="70%">
+		<b>您的业务机会数未达到标准4个,目前进行中的业务机会有{!OppNum}个</b></td>
+		<td  scope="col" class="noRowsHeader" width="30%">
+		<b><a href="/setup/ui/recordtypeselect.jsp?ent=Opportunity&retURL=%2F006%2Fo&save_new_url=%2F006%2Fe%3FretURL%3D%252F006%252Fo" target="_blank">创建</a></b>
+		</td>
+	</tr>
+	<tr Style="{!if(IsCampaign,"display:block width=100%","display:none")}">
+		<td scope="col" class="noRowsHeader" width="70%">
+		<b>以下市场活动可以进行报名</b></td>
+		<td  scope="col" class="noRowsHeader" width="30%">
+		<apex:repeat value="{!List_Cam}" Var="cam">
+			<b><a href="/{!cam.Id}" target="_blank">{!cam.Name}</a></b>
+			&nbsp;
+		</apex:repeat>
+		</td>
+	</tr>
+</tbody>
+</table>
+</apex:form>
+</div>
+</apex:page>

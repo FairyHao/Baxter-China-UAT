@@ -1,0 +1,232 @@
+<apex:page tabStyle="RenalHospCRRT__c" standardController="RenalHospCRRT__c" extensions="ACUTE_InforNew">
+<head>
+ <apex:sectionHeader title="医院ACUTE信息编辑" subtitle="新建医院ACUTE信息"/>
+<style> 
+.tables {   
+    width:100%; 
+    font-family: verdana,arial,sans-serif;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}  
+
+.tables td {border-width: 1px;
+            padding: 8px;
+          }
+</style>
+</head>
+    <apex:form >
+        <apex:pageBlock title="医院ACUTE信息编辑" mode="edit">
+            <apex:pageMessages />
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!mySave}" value="保存"/>
+                <apex:commandButton action="{!cancel}" value="取消"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="基本信息" columns="2"> 
+                <apex:inputField value="{!Acute.Account__c}" required="true"/>
+                <apex:outputField value="{!Acute.ACUTE_Year__c}" />
+                <apex:outputField value="{!Acute.Month__c}"/>
+            </apex:pageBlockSection> 
+            <div class="pbSubheader brandTertiaryBgr first tertiaryPalette"><span class="pbSubExtra"><span class="requiredLegend"><span class="requiredExampleOuter"><span class="requiredExample">&nbsp;</span></span><span class="requiredText"> = 必填信息</span></span></span><h3>机器品牌信息</h3></div>            
+            <apex:outputPanel id="thePanel">
+            <table class="list" border="0" width="600px">
+                <apex:repeat value="{!Brandlist1}" var="Item">
+                <tr>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist1),'0',Brandlist1.Size)}" style="{!if(Item.IsShow,'','display:none;')}">
+                        <apex:commandButton value=" + " action="{!addLine}" rendered="{!IsAddShow}" reRender="thePanel" immediate="true"/>  
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Department__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Department__c}"/>    
+                    </td>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist1),'0',Brandlist1.Size)}" style="{!if(Item.IsShow,'','display:none;')}">                       
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_ConfigurationMode__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_ConfigurationMode__c}"/>                                         
+                    </td>
+                    <td>
+                        <apex:commandButton value=" + " action="{!AddRoom1}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist1)&&Brandlist1.Size<4,true,false)}"/>
+                        <apex:commandButton value=" - " action="{!removeRoom1}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist1)&&Brandlist1.Size==1,false,true)}"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Brand__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Brand__c}" />
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_TotalQuantity__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_TotalQuantity__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_mark__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_mark__c}"/>
+                    </td>                    
+                </tr>                       
+                </apex:repeat>
+                <apex:repeat value="{!Brandlist2}" var="Item">
+                <tr>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist2),'0',Brandlist2.Size)}" style="{!if(Item.IsShow,'','display:none;')}">
+                        <apex:commandButton value=" + " action="{!addLine}" rendered="{!IsAddShow}" reRender="thePanel" immediate="true"/>  
+                        <apex:commandButton value=" - " action="{!removeLine2}" reRender="thePanel" immediate="true"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Department__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Department__c}"/>    
+                    </td>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist2),'0',Brandlist2.Size)}" style="{!if(Item.IsShow,'','display:none;')}">                       
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_ConfigurationMode__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_ConfigurationMode__c}"/>                                             
+                    </td>
+                    <td>
+                        <apex:commandButton value=" + " action="{!AddRoom2}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist2)&&Brandlist2.Size<4,true,false)}"/>
+                        <apex:commandButton value=" - " action="{!removeRoom2}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist2)&&Brandlist2.Size==1,false,true)}"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Brand__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Brand__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_TotalQuantity__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_TotalQuantity__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_mark__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_mark__c}"/>
+                    </td>                      
+                </tr>                       
+                </apex:repeat>
+                <apex:repeat value="{!Brandlist3}" var="Item">
+                <tr>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist3),'0',Brandlist3.Size)}" style="{!if(Item.IsShow,'','display:none;')}">
+                        <apex:commandButton value=" + " action="{!addLine}" rendered="{!IsAddShow}" immediate="true" reRender="thePanel"/>  
+                        <apex:commandButton value=" - " action="{!removeLine3}" reRender="thePanel" immediate="true"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Department__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Department__c}"/>
+                    </td>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist3),'0',Brandlist3.Size)}" style="{!if(Item.IsShow,'','display:none;')}">
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_ConfigurationMode__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_ConfigurationMode__c}"/>                         
+                    </td>
+                    <td>
+                        <apex:commandButton value=" + " action="{!AddRoom3}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist3)&&Brandlist3.Size<4,true,false)}"/>
+                        <apex:commandButton value=" - " action="{!removeRoom3}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist3)&&Brandlist3.Size==1,false,true)}"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Brand__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Brand__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_TotalQuantity__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_TotalQuantity__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_mark__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_mark__c}"/>
+                    </td>                      
+                </tr>                       
+                </apex:repeat>
+                <apex:repeat value="{!Brandlist4}" var="Item">
+                <tr>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist4),'0',Brandlist4.Size)}" style="{!if(Item.IsShow,'','display:none;')}">
+                        <apex:commandButton value=" + " action="{!addLine}" rendered="{!IsAddShow}" immediate="true" reRender="thePanel"/> 
+                        <apex:commandButton value=" - " action="{!removeLine4}" reRender="thePanel" immediate="true"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Department__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Department__c}"/>
+                    </td>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist4),'0',Brandlist4.Size)}" style="{!if(Item.IsShow,'','display:none;')}">                       
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_ConfigurationMode__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_ConfigurationMode__c}"/>                         
+                    </td>
+                    <td>
+                        <apex:commandButton value=" + " action="{!AddRoom4}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist4)&&Brandlist4.Size<4,true,false)}"/>
+                        <apex:commandButton value=" - " action="{!removeRoom4}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist4)&&Brandlist4.Size==1,false,true)}"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Brand__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Brand__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_TotalQuantity__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_TotalQuantity__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_mark__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_mark__c}"/>
+                    </td>                      
+                </tr>                       
+                </apex:repeat>  
+                <apex:repeat value="{!Brandlist5}" var="Item">
+                <tr>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist5),'0',Brandlist5.Size)}" style="{!if(Item.IsShow,'','display:none;')}">
+                        <apex:commandButton value=" + " action="{!addLine}" rendered="{!IsAddShow}" immediate="true" reRender="thePanel"/> 
+                        <apex:commandButton value=" - " action="{!removeLine5}" reRender="thePanel" immediate="true"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Department__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Department__c}"/>
+                    </td>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist5),'0',Brandlist5.Size)}" style="{!if(Item.IsShow,'','display:none;')}">                       
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_ConfigurationMode__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_ConfigurationMode__c}"/>                         
+                    </td>
+                    <td>
+                        <apex:commandButton value=" + " action="{!AddRoom5}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist5)&&Brandlist5.Size<4,true,false)}"/>
+                        <apex:commandButton value=" - " action="{!removeRoom5}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist5)&&Brandlist5.Size==1,false,true)}"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Brand__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Brand__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_TotalQuantity__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_TotalQuantity__c}"/>
+                    </td>
+                     <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_mark__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_mark__c}"/>
+                    </td>                     
+                </tr>                       
+                </apex:repeat>  
+                <apex:repeat value="{!Brandlist6}" var="Item">
+                <tr>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist6),'0',Brandlist6.Size)}" style="{!if(Item.IsShow,'','display:none;')}">
+                        <apex:commandButton value=" + " action="{!addLine}" rendered="{!IsAddShow}" immediate="true" reRender="thePanel"/> 
+                        <apex:commandButton value=" - " action="{!removeLine6}" reRender="thePanel" immediate="true"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Department__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Department__c}"/>
+                    </td>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist6),'0',Brandlist6.Size)}" style="{!if(Item.IsShow,'','display:none;')}">                       
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_ConfigurationMode__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_ConfigurationMode__c}"/>                         
+                    </td>
+                    <td>
+                        <apex:commandButton value=" + " action="{!AddRoom6}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist6)&&Brandlist6.Size<4,true,false)}"/>
+                        <apex:commandButton value=" - " action="{!removeRoom6}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist6)&&Brandlist6.Size==1,false,true)}"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Brand__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Brand__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_TotalQuantity__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_TotalQuantity__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_mark__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_mark__c}"/>
+                    </td>                      
+                </tr>                       
+                </apex:repeat>  
+                <apex:repeat value="{!Brandlist7}" var="Item">
+                <tr>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist7),'0',Brandlist7.Size)}" style="{!if(Item.IsShow,'','display:none;')}">
+                        <apex:commandButton value=" + " action="{!addLine}" rendered="{!IsAddShow}" immediate="true" reRender="thePanel"/> 
+                        <apex:commandButton value=" - " action="{!removeLine7}" reRender="thePanel" immediate="true"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Department__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Department__c}"/>
+                    </td>
+                    <td align="center" rowspan="{!if(ISNULL(Brandlist7),'0',Brandlist7.Size)}" style="{!if(Item.IsShow,'','display:none;')}">                       
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_ConfigurationMode__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_ConfigurationMode__c}"/>                         
+                    </td>
+                    <td>
+                        <apex:commandButton value=" + " action="{!AddRoom7}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist7)&&Brandlist7.Size<4,true,false)}"/>
+                        <apex:commandButton value=" - " action="{!removeRoom7}" reRender="thePanel" immediate="true" rendered="{!if(!ISNULL(Brandlist7)&&Brandlist7.Size==1,false,true)}"/>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_Brand__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_Brand__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_TotalQuantity__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_TotalQuantity__c}"/>
+                    </td>
+                    <td>
+                        <apex:outputLabel value="{!$ObjectType.ACUTE_BrandInfor__c.fields.ACUTE_mark__c.label}"/>
+                        <apex:inputField value="{!Item.brand.ACUTE_mark__c}"/>
+                    </td>                      
+                </tr>                       
+                </apex:repeat>                                                                                              
+            </table>           
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

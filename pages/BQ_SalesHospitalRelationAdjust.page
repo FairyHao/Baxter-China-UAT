@@ -1,0 +1,151 @@
+<apex:page standardcontroller="V2_Account_Team__c" extensions="BQ_CtrlSalesHospitalRelationAdjust">
+<apex:includeScript value="/soap/ajax/27.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/27.0/apex.js"/>
+<script type="text/javascript">
+var __sfdcSessionId = '{!GETSESSIONID()}';
+</script>
+<script src="../../soap/ajax/27.0/connection.js" type="text/javascript"></script>
+
+<script>
+ function CompleteAndApprove()
+ {
+	var msg ="";
+  	var warning = "{!strWarningMsg}";
+   	var warns = warning.split("<br/>");
+   	for(var i=0; i< warns.length; i++)
+   	{
+   		if(i == warns.length-1)
+   		{
+   			msg += warns[i]+"\n";
+   		}else{
+	   		msg += (i+1)+". "+warns[i]+"\n";
+   		}
+   	}
+     var cf = window.confirm('您确认调整销售医院关系吗？\n'+msg);
+     if(cf){
+        methodInJavascript();
+     }else{
+        window.event.returnValue = false;
+        return false;
+     }
+ }
+ </script>
+<apex:sectionHeader subtitle="销售医院关系调整"/>
+<apex:form >
+    <apex:pageBlock >
+    <apex:outputPanel style="font-family: 微软雅黑;font-size: 16px;">
+        <apex:outputLabel value="页面说明：" /><br/>
+    </apex:outputPanel>
+    <apex:outputPanel style="font-family: 微软雅黑;font-size: 13px;">
+        <apex:outputLabel value="1.若您需要新增销售医院关系，请选择新增操作，并且填写小组成员信息" /><br/>
+        <apex:outputLabel value="2.若您需要调整销售医院关系，请选择替换操作，选择要替换的原成员，并且填写小组成员信息" /><br/>
+        <apex:outputLabel value="3.若您需要删除销售医院关系，请选择删除操作，选择要删除的原成员，并且填写删除信息" /><br/> 
+    </apex:outputPanel>
+    <br/>
+    <apex:pageMessage severity="warning" strength="2" summary="{!strWarningMsg}" rendered="{!blnShowWarning}" escape="false"/>
+    <apex:pageMessages />
+    
+    <apex:outputPanel rendered="{!EnablePage}" Id="panel">
+        <!-- 选择操作 -->
+        <apex:pageBlockSection title="选择操作" columns="2" Id="theBlock" rendered="true">
+            <apex:pageBlockSectionItem >
+                <apex:selectList size="1" value="{!SelectedOperate}" onchange="changeOperate();" label="选择操作">
+                    <apex:selectOptions value="{!listOperate}"/>
+                </apex:selectList>
+                <apex:actionStatus id="saveStatus">
+	                <apex:facet name="start">
+	                    <apex:image id="messageIcon" value="{!$Resource.AjaxAnimation}" />
+	                </apex:facet>
+	                <apex:facet name="stop">
+	                </apex:facet>
+	            </apex:actionStatus>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        <apex:actionFunction action="{!SelectOperate}" name="changeOperate" reRender="panel" status="saveStatus"/>
+        
+        
+        <!-- 新增操作 -->
+        <apex:outputPanel rendered="{!EnableAddMember}">
+            <apex:pageBlockSection title="新小组成员信息" columns="2" rendered="true">
+	            <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="小组成员"/>
+	                <apex:inputField value="{!objAccountTeam.V2_User__c}" />
+	            </apex:pageBlockSectionItem>
+	            <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="生效日期"/>
+	                <apex:inputField value="{!objAccountTeam.EffectiveDate__c}" />
+	            </apex:pageBlockSectionItem>
+	            <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="调整原因"/>
+	                <apex:inputField value="{!objAccountTeam.V2_AdjustReson__c}" />
+	            </apex:pageBlockSectionItem> 
+            </apex:pageBlockSection>
+        </apex:outputPanel>
+        
+        <!-- 替换操作 -->
+        <apex:outputPanel rendered="{!EnableReplaceMember}">
+            <apex:pageBlockSection title="选择被替换的原成员" columns="2" rendered="true">
+	            <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="选择原成员"/>
+	                <apex:selectList size="1" value="{!SelectedSubUser}">
+	                    <apex:selectOptions value="{!listSubUser}"/>
+	                </apex:selectList>
+	            </apex:pageBlockSectionItem>
+	        </apex:pageBlockSection>
+	        <apex:pageBlockSection title="新小组成员信息" columns="2" >
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="小组成员"/>
+                    <apex:inputField value="{!objAccountTeam.V2_User__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="生效日期"/>
+                    <apex:inputField value="{!objAccountTeam.EffectiveDate__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="调整原因"/>
+                    <apex:inputField value="{!objAccountTeam.V2_AdjustReson__c}" />
+                </apex:pageBlockSectionItem> 
+            </apex:pageBlockSection>
+        </apex:outputPanel>
+        
+        <!-- 删除操作 -->
+        <apex:outputPanel rendered="{!EnableDeleteMember}">
+            <apex:pageBlockSection title="选择被删除的原成员" columns="2" rendered="true">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="选择原成员"/>
+                    <apex:selectList size="1" value="{!SelectedSubUser}">
+                        <apex:selectOptions value="{!listSubUser}"/>
+                    </apex:selectList>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="失效信息" columns="2" >
+            <!-- 
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="立即失效"/>
+                    <apex:inputField value="{!objAccountTeam.V2_ImmediateDelete__c}" />
+                </apex:pageBlockSectionItem>
+              -->
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="失效日期"/>
+                    <apex:inputField value="{!objAccountTeam.EffectiveDate__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="调整原因"/>
+                    <apex:inputField value="{!objAccountTeam.V2_AdjustReson__c}" />
+                </apex:pageBlockSectionItem> 
+            </apex:pageBlockSection>
+        </apex:outputPanel> 
+        
+    </apex:outputPanel>
+    
+    <apex:pageblockButtons location="bottom">
+    		<!-- <input type="button" value="完成并提交审批" onclick="CompleteAndApprove();" class="btn"/> -->
+    		<input id="af" value="完成并提交审批" type="button" onclick="CompleteAndApprove();" class="btn"/>
+    		<apex:actionFunction action="{!doSave}" name="methodInJavascript"></apex:actionFunction>
+<!--    		<apex:actionFunction action="{!CheckedAdminSelect}" name="CheckedUser"></apex:actionFunction>-->
+            <!-- <apex:commandButton value="完成并提交审批" action="{!doSave}" rendered="{!EnablePage}"/> --> 
+            <apex:commandButton value="取消" action="{!doCancel}" immediate="true"/>
+        </apex:pageblockButtons>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

@@ -1,0 +1,73 @@
+<apex:page showheader="false" Controller="BQ_CtrlBatchEditMonthlyPlanDetail" id="mypage" >
+    <script>
+        function checkAll(cb)
+        {
+            var inputElem = document.getElementsByTagName("input"); 
+            for(var i=0; i<inputElem.length; i++)
+            {
+                if(inputElem[i].id.indexOf("selectOpt")!=-1)
+                inputElem[i].checked = cb.checked;
+            }
+        }  
+    </script>
+    <apex:form id="ert">
+        <apex:pageblock >
+            <apex:pageMessages />
+            <div align="left" style="font-family: 微软雅黑; font-size: 16px;">批量维护目标联系人拜访计划</div>
+           <hr size= "2" color=" #336600" ></hr>
+            <apex:actionFunction action="{!SearchAcc}" name="SearchAccJs" />
+            <apex:pageBlockTable value="{!ListMPD}" var="mp">
+<!--                <apex:facet name="header" >批量维护目标联系人拜访计划</apex:facet>-->
+                <apex:column Style="width:25px">
+                    <apex:facet name="header" > 
+                         <input type="checkbox" id="chkall" onclick="checkAll(this)" />
+                    </apex:facet>
+                    <apex:inputCheckbox value="{!mp.IsDelete}" id="selectOpt"/> 
+                </apex:column>
+                <apex:column headerValue="联系人">
+                    <apex:InputField value="{!mp.MpDetail.Contact__c}" rendered="{!if(mp.IsNew,true,false)}" onchange="SearchAccJs()"/>
+                    <apex:OutputField value="{!mp.MpDetail.Contact__c}" rendered="{!if(mp.IsNew,false,true)}" />
+                </apex:column>
+                <apex:column headerValue="客户">
+<!--                    <apex:InputField value="{!mp.MpDetail.Account__c}" rendered="{!if(mp.IsNew,true,false)}"/>-->
+                    <apex:OutputField value="{!mp.MpDetail.Account__c}" />
+                </apex:column>
+                <apex:column headerValue="计划次数">
+                    <apex:InputField value="{!mp.MpDetail.AdjustedTimes__c}" required="true"/>
+                </apex:column> 
+                <apex:column headerValue="安排次数">
+                    <apex:OutputField value="{!mp.MpDetail.ArrangedTimes__c}" />
+                </apex:column>
+                <apex:column headerValue="完成次数">
+                    <apex:OutputField value="{!mp.MpDetail.Planned_Finished_Calls__c}" />
+                </apex:column>
+            </apex:pageBlockTable>
+            <table align="left">
+                <tr>
+                    <td>
+                        <apex:commandButton value="+" action="{!AddMpDetail}"  /> 
+                    </td>
+                    <td>
+                        <apex:commandButton value="删除" action="{!DeleteMpDetail}" />
+                    </td>
+                    <td>
+                        <apex:commandButton value="保存" action="{!SaveMpDetail}" />  
+                    </td>
+                </tr> 
+            </table>
+        </apex:pageblock>
+    </apex:form>
+    <script>
+        if({!IsClose})
+        {
+            CloseWindow(); 
+        }
+        function CloseWindow()
+        {
+            var url = "/"+"{!MonthlyPlanId}";
+            //alert("########"+url);
+            opener.document.location= url;
+            window.close(); 
+        }
+    </script>
+</apex:page>

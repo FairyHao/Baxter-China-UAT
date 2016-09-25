@@ -1,0 +1,53 @@
+<apex:page standardController="BNAHospitalInfo__c"  extensions="BNAAccountInfoViewController" id="page">
+    <apex:sectionHeader title="" subtitle="{!Info.Name}"/>
+    <apex:form id="form">
+        <apex:pageBlock id="pb" mode="maindetail">
+            <apex:pageBlockButtons >
+                <apex:commandButton value="编辑" action="{!edit}"/>
+                
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection title="客户基本信息" columns="2">
+            	
+                <apex:outputField value="{!Info.OpportunityId__c}"></apex:outputField>
+                <apex:outputField value="{!Info.BNA_AccountLevel__c}"></apex:outputField>
+                <apex:outputField value="{!Info.BNA_BedNumber__c}"></apex:outputField> 
+                <apex:outputField value="{!Info.BNA_SpecialHospital__c}"></apex:outputField>
+                <apex:outputField value="{!Info.BNA_EndemicNumber__c}"></apex:outputField>
+                <apex:outputField value="{!Info.BNA_ClinicTotleYear__c}"  />
+                <apex:outputField value="{!Info.BNA_TransfusionNumber__c}"></apex:outputField>
+                <apex:outputField value="{!Info.BNA_PrimaryHospital__c}"></apex:outputField>
+                <apex:outputField value="{!Info.BNA_NurseWork__c}"></apex:outputField>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="医院PIAVS信息" columns="2">
+            	<apex:outputField value="{!Info.BNA_IsPIVAS__c}"></apex:outputField>
+            	<apex:outputField value="{!Info.BNA_IsPlan__c}" rendered="{!if(Info.BNA_IsPIVAS__c == '否',true,false)}"></apex:outputField>
+            	<apex:outputField value="{!Info.BNA_PIVASCoverage__c}" rendered="{!if(Info.BNA_IsPIVAS__c == '是',true,false)}"></apex:outputField>
+            	<apex:outputField value="{!Info.BNA_PIVASForm__c}" rendered="{!if(Info.BNA_IsPIVAS__c == '是',true,false)}"></apex:outputField>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="医院OUVIA信息" columns="2">
+                <apex:outputField value="{!Info.BNA_ISOUVIA__c}" />
+                <apex:outputField value="{!Info.BNA_OUVIAFromWhere__c}" rendered="{!if(Info.BNA_ISOUVIA__c =='有',true,false)}"/>
+                <apex:outputField value="{!Info.BNA_OUVIACoverage__c}" rendered="{!if(Info.BNA_ISOUVIA__c =='有',true,false)}"/>
+                <apex:outputField value="{!Info.BNA_OUVAPlan__c}" rendered="{!if(Info.BNA_ISOUVIA__c =='无',true,false)}"/>
+            </apex:pageBlockSection>
+             <apex:pageBlockSection title="移动护理信息" columns="1">
+             	<apex:outputField value="{!Info.BNA_IsMobileSystem__c}" ></apex:outputField>
+             	<apex:outputField value="{!Info.BNA_AllMobileSystem__c}" rendered="{!if(Info.BNA_IsMobileSystem__c == '有',true,false)}"></apex:outputField>
+             	<apex:outputField rendered="{!if(Info.BNA_AllMobileSystem__c == '是',true,false)}" value="{!Info.BNA_UpdateTime__c}"/>
+                <apex:outputField value="{!Info.BNA_Hardware_list__c}" rendered="{!if(Info.BNA_AllMobileSystem__c == '是',true,false)}"/>
+                <apex:outputField value="{!Info.BNA_Hardware__c}" rendered="{!if(Info.BNA_AllMobileSystem__c == '是',true,false)}"/>
+                <apex:outputField rendered="{!if(Info.BNA_AllMobileSystem__c == '是',true,false)}" value="{!Info.BNA_ProductAndPrice__c}" />
+                <apex:outputField rendered="{!if(Info.BNA_AllMobileSystem__c == '否',true,false)}" value="{!Info.BNA_IsOfficeMobileSystem__c}"  />
+                <apex:outputField rendered="{!if(Info.BNA_AllMobileSystem__c == '否',true,false)}" value="{!Info.BNA_Evaluate__c}"  />
+                <apex:outputField value="{!Info.BNA_FromDep__c}"  rendered="{!if(Info.BNA_AllMobileSystem__c !=null,true,false)}"/>
+                <apex:outputField value="{!Info.BNA_Budget__c}"  rendered="{!if(Info.BNA_AllMobileSystem__c !=null,true,false)}"/>
+             	<apex:outputField value="{!Info.BNA_BuildMobileSystemForYear__c}" rendered="{!if(Info.BNA_IsMobileSystem__c == '无',true,false)}"></apex:outputField>
+             </apex:pageBlockSection>
+             <apex:pageBlockSection title="系统信息" columns="2">
+             	<apex:outputField value="{!Info.CreatedDate}" ></apex:outputField>
+             	<apex:outputField value="{!Info.OwnerId}" ></apex:outputField>
+             </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

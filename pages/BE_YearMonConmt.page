@@ -1,0 +1,47 @@
+<apex:page controller="BE_YearMonConmtController" sidebar="false" showHeader="false">
+<apex:sectionHeader subtitle="BIOS日程汇总"/>
+	<apex:form id="myform">
+	 <apex:pageMessages />
+        <apex:pageblock rendered="{!IsView}">
+			<!-- <div align="center" style="font-family: 微软雅黑; font-size: 16px;">BIOS日程汇总</div> -->
+            <hr size= "0" color="#99CC33"  ></hr>
+            <table align="center" cellpadding ="5" border="0">
+                <tr>
+                    <td Style="font-family: 微软雅黑;font-size: 15px; float:right;">
+                       		年份:
+                        <apex:selectList size="1" value="{!Year}" >
+                            <apex:selectOptions value="{!ListYears}"/>
+                        </apex:selectList>
+                    </td>
+                    <td Style="font-family: 微软雅黑;font-size: 15px;">
+                        	月份：
+                        <apex:selectList size="1"  value="{!Month}" >
+                                <apex:selectOptions value="{!ListMonths}"/>
+                        </apex:selectList>
+                    </td>
+                    <td></td>
+                    <td><apex:commandButton value="开始汇总"  Style="float:left;" action="{!BeginComputationBonus}" disabled="{!ButtonDisabled}"/></td>
+                </tr>
+                <tr style="background: #1695be;">
+					<th colspan="4" >BIOS日程汇总计算规则</th>
+				</tr>
+				<tr style="background: #cfedf7;">
+					<td colspan="4" style="font-family: 华文宋体; font-size: 15px;"><span style="font-family: 华文宋体; font-weight:bold; font-size: 18px;">概述：</span>
+							<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本页面功能为BIOS日程汇总计算，主要操作对以记录类型为“拜访”和“事件”的活动进行汇总，其中“事件”优先于“拜访”</td>
+				</tr>
+				<tr style="background: #cfedf7;">
+					<td colspan="4" style="font-family: 华文宋体; font-size: 15px;">（1）以每日13点为界限，之前为上午，之后为下午。将每天划分为两个时间单元。</td>
+				</tr>
+				<tr style="background: #cfedf7;">
+					<td colspan="4" style="font-family: 华文宋体; font-size: 15px;">（2）对于“拜访”：某个时间单元，如果已经存在一条或者多条拜访，并且期间无事件发生就记为拜访0.5天否则不记为拜访</td>
+				</tr>
+				<tr style="background: #cfedf7;">
+					<td colspan="4" style="font-family: 华文宋体; font-size: 15px;">（3）对于“事件”：某个时间单元，如果已经存在一条或者多条事件，就记为事件0.5天</td>
+				</tr>
+				<tr style="background: #cfedf7;">
+					<td colspan="4" style="font-family: 华文宋体; font-size: 15px;">（4）对于多个“事件”：于一个时间单元存在多个事件的情况，采取对比持续时间长度的办法，持续时间较长的为该时间单元的事件。"</td>
+				</tr>
+            </table>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,81 @@
+<apex:page >
+<apex:includeScript value="/soap/ajax/25.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/25.0/apex.js"/>
+<script language="javascript">
+window.onload = getRoleName();
+function getReportId(strRole)
+{
+    var strQuery = "Select Name, Id, Description From Report ";
+    strQuery += " where Name='"+ strRole +"'";
+    sforce.connection.sessionId = '{!$Api.Session_ID}';
+    //alert(strQuery);
+    //alert("sforce:"+sforce.connection);
+    var queryResult = sforce.connection.query(strQuery); 
+    //alert("queryResult:"+queryResult);
+    var records = queryResult.getArray("records"); 
+    //alert("records:"+records);
+    var strReportId = "";
+    if(records != null && records !='undefined' && records.length>0)
+    {
+        strReportId  =records[0].Id;
+    }
+    return strReportId;
+}
+function getRoleName()
+{
+    var strRoleName = "{!$UserRole.Name }";
+    //alert(strRoleName);
+    var arrRoleName = strRoleName.split("-");
+    var strRoleName = "";
+    if(arrRoleName.length==5)
+    {
+        rolePD = arrRoleName[3];
+        //alert(rolePD)
+        if(rolePD.toLowerCase()=="pd")
+        {
+            strRoleName = "Renal_协访点评情况表";
+        }
+        else if(rolePD.toLowerCase()=="ivt")
+        {
+            strRoleName = "MD_协访点评情况表";
+        }
+        else if(rolePD.toLowerCase()=="sp")
+        {
+            strRoleName = "MD_协访点评情况表";
+        }
+        else if(rolePD.toLowerCase()=="hd/crrt")
+        {
+            strRoleName = "Renal_协访点评情况表";
+        }
+        else if(rolePD.toLowerCase()=="hd")
+        {
+            strRoleName = "Renal_协访点评情况表";
+        }
+        else if(rolePD.toLowerCase()=="crrt")
+        {
+            strRoleName = "Renal_协访点评情况表";
+        }
+        else
+        {
+            backToHistoryPage();
+        }
+    }
+    else
+    {
+        backToHistoryPage();
+    }
+    //alert("strRoleName:"+strRoleName);
+    if(strRoleName != "")
+    {
+        var strReportId = getReportId(strRoleName);
+        //alert(strReportId);
+        window.location.href = "/"+strReportId;
+    }
+}
+function backToHistoryPage()
+{
+    alert("非常抱歉，您的部门目前还无法使用此功能！");
+    window.location.href = "/home/home.jsp";//window.history.back();
+}
+</script>
+</apex:page>

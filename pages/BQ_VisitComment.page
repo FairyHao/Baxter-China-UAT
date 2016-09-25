@@ -1,0 +1,18 @@
+<apex:page Standardcontroller="Event" extensions="BQ_CtrlVisitComment">
+<apex:includeScript value="/soap/ajax/25.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/25.0/apex.js"/>
+<script>
+isAdminUser();
+function isAdminUser(){
+    //alert("!");
+    
+    var isAdmin = '{!isAdmin}';
+    //alert('{!EventId}');
+    if(isAdmin == true || isAdmin == 'true'){
+        window.location.href="/apex/BQ_VisitCommentForAdmin?peid="+'{!EventId}' ;
+    }else{
+        window.location.href="/apex/BQ_VisitComments?peid="+'{!EventId}' ;
+    }
+} 
+</script>
+</apex:page>

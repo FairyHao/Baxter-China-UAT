@@ -1,0 +1,381 @@
+<!-- 
+   Bill update 2013-8-22
+       修改系统后台生成PDF的逻辑，将“业务机会拜访情况”、“业务机会情况分析”、“业务机会阶段情况”的代码注释掉即可。
+ -->
+<apex:page controller="BQ_CtrlMonthlyPlanReport" showHeader="false" renderAs="pdf">
+<!-- renderAs="pdf" -->
+<html>
+    <head>
+        <title>Ranel_月计划分析报表</title>   
+        <style type="text/css">
+        table{
+             border-bottom-color:#cccccc;
+             border-bottom-width:4px;
+             border-bottom-style:inset;
+             font-size: 10px;
+         }
+        .theRedFont{
+            font-size:18px;
+            font-weight:bold;
+            color:#FF0000;
+            text-indent: 20px; 
+        }
+        .theBlackFont{
+            font-size:12px;
+            font-weight:bold;
+            color:#black;
+            text-indent: 10px;
+        }
+        tr{
+              background-color:#FFFFFF;
+        }
+        .theBlackTrStyle{
+            background-color:#F0F0F0;
+            font-weight:bold;
+            color:#0000FF;          
+        }
+        .hiddentext{
+            display:none ;
+        }
+        </style>
+    </head> 
+    <body style="font-family:Arial Unicode MS;font-size: 18px;">
+    
+<br/>
+
+<div  style="font-size:25px" align="center">  
+    <strong>月计划分析报告</strong>
+</div>
+<!-- 月计划概述 -->
+<table width="700" height="248" border="1" align="center" cellpadding="0" cellspacing="0" class="theTablecontentFont" style="font-size: 12px;">
+<tr>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">月计划概述</td>
+</tr>
+<tr>
+    <td height="102">
+        <table width="700"  cellpadding="0" cellspacing="0"   border="0" style="border-bottom-color:#ffffff;">
+        <tr>
+            <td width="125">所有人别名</td>
+            <td width="263"><apex:outputText value="{!objUser.CommunityNickname}"/></td>
+            <td><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.V2_TotalCallRecords__c.label}" /></td>
+            <td><apex:outputText value="{0, number, 0}">
+                    <apex:param value="{!objMonthlyPlan.V2_TotalCallRecords__c}" />
+                </apex:outputText></td>
+            
+        </tr>
+        <tr>
+            <td><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.Year__c.label}" /></td>
+            <td><apex:outputText value="{!objMonthlyPlan.Year__c}"/></td>
+            <td><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.V2_FinishedCallRecords__c.label}" /></td>
+            <td><apex:outputText value="{0, number, 0}">
+                <apex:param value="{!objMonthlyPlan.V2_FinishedCallRecords__c}" />
+            </apex:outputText></td>
+            
+        </tr>
+        <tr>
+            <td><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.Month__c.label}" /></td>
+            <td><apex:outputText value="{!objMonthlyPlan.Month__c}"/></td>
+            <!-- 已过期次数 -->
+            <!-- <td><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.FinishedPlannedCallRecords__c.label}" /></td> -->
+            <!-- <td><apex:outputText value="{0, number, 0}">
+                <apex:param value="{!objMonthlyPlan.FinishedPlannedCallRecords__c}" />
+            </apex:outputText></td> -->
+            <td>已过期次数</td>
+            <td><apex:outputText value="{!intExpireSum}" /></td>
+            
+        </tr>
+        <tr>
+        
+            <td><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.Percent__c.label}" /></td>
+            <td><apex:outputText value="{!objMonthlyPlan.Percent__c}%"/></td>
+            <td><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.Approval__c.label}" /></td>
+            <td><apex:outputText value="{0, number, 0}">
+                <apex:param value="{!objMonthlyPlan.Approval__c}" />
+            </apex:outputText></td>
+        </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td height="28" style="table-layout:auto;word-wrap:break-word;"> <span class="theBlackFont"><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.Target__c.label}" />:</span> <br/> <apex:outputText styleClass="theInputStyle" value="{!objMonthlyPlan.Target__c}" escape="false" /></td> 
+</tr>
+<tr>
+    <td height="28"><span class="theBlackFont"><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.execution_summary__c.label}" /> :</span> <br/>  <apex:outputText styleClass="theInputStyle" value="{!objMonthlyPlan.execution_summary__c}" escape="false" /></td>
+</tr>
+<tr>
+    <td><span class="theBlackFont"><apex:outputLabel value="{!$ObjectType.MonthlyPlan__c.fields.supervisor_comment__c.label}" /> :</span> <br/> <apex:outputText styleClass="theInputStyle" value="{!objMonthlyPlan.supervisor_comment__c}" escape="false" /></td>
+</tr> 
+
+</table>
+<br/>
+<br/>
+<div >
+<!-- 目标联系人统计分析&拜访情况统计 -->
+<table width="700" border="1" cellpadding="0" cellspacing="0" align="center" style="font-size: 12px;display:{!if(blnFirstShow,'','none')}">
+<tr>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">目标联系人统计分析</td>
+    <td></td>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">拜访情况统计</td>
+</tr>
+<tr>
+    <td class="theBlackFont">月计划联系人分布情况</td>
+    <td class="theBlackFont">实际拜访联系人分布情况</td> 
+    <td class="theBlackFont">拜访次数分布情况</td>
+</tr>
+<tr style="display:{!if(blnFirstShow,'none','')}">
+    <td> <img src="https://chart.googleapis.com/chart?{!PlanContactDistributionByGrade}"/></td>
+    <td> <img src="https://chart.googleapis.com/chart?{!ActualContactDistributionByGrade}"/>  </td>
+    <td> <img src="https://chart.googleapis.com/chart?{!ActualCallDistributionByGrade}"/>  </td>
+</tr>
+<tr>
+    <td> <img src="https://chart.googleapis.com/chart?{!PlanContactDistributionByType}"/> &nbsp;</td>
+    <td> <img src="https://chart.googleapis.com/chart?{!ActualContactDistributionByType}"/> &nbsp;</td>
+    <td> <img src="https://chart.googleapis.com/chart?{!ActualCallDistributionByType}"/> &nbsp;</td>
+</tr>
+</table>
+</div>
+
+<div>
+
+<!-- 目标联系人统计分析&拜访情况统计BIOS -->
+<table width="700" border="1" cellpadding="0" cellspacing="0" align="center" style="font-size: 12px;display:{!if(blnBiosShow,'','none')}">
+<tr>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">目标联系人统计分析</td>
+    <td></td>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">拜访情况统计</td>
+</tr> 
+<tr>
+    <td class="theBlackFont">月计划联系人分布情况</td>
+    <td class="theBlackFont">实际拜访联系人分布情况</td> 
+    <td class="theBlackFont">拜访次数分布情况</td>
+</tr>
+<tr>
+    <td> <img src="https://chart.googleapis.com/chart?{!PlanContactDistributionByGrade}"/></td>
+    <td> <img src="https://chart.googleapis.com/chart?{!ActualContactDistributionByGrade}"/>  </td>
+    <td> <img src="https://chart.googleapis.com/chart?{!ActualCallDistributionByGrade}"/>  </td>
+</tr>
+<tr>
+    <td> <img src="https://chart.googleapis.com/chart?{!PlanContactDistributionByDepartmentType}"/> &nbsp;</td>
+    <td> <img src="https://chart.googleapis.com/chart?{!ActualContactDistributionByDepartmentType}"/> &nbsp;</td>
+    <td> <img src="https://chart.googleapis.com/chart?{!ActualCallDistributionByDepartmentType}"/> &nbsp;</td>
+</tr>
+</table>
+</div>
+<!-- 拜访完成情况 -->
+<table width="700" border="1" cellpadding="0" cellspacing="0" align="center" style="font-size: 12px;display:{!if(blnRenalShow,'','none')}">
+<tr>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">拜访完成情况</td>
+    <td>&nbsp;</td>
+</tr>
+<tr>               
+    <td> <img src="https://chart.googleapis.com/chart?{!VisitCompleteRatioCondition}"/> &nbsp;</td>
+    <td> <img src="https://chart.googleapis.com/chart?{!VisitCompleteCountCondition}"/> &nbsp;</td>
+</tr>
+</table>
+
+<!-- 拜访完成情况bios -->
+<table width="700" border="1" cellpadding="0" cellspacing="0" align="center" style="font-size: 12px;display:{!if(blnBiosShow,'','none')}">
+<tr>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">拜访完成情况</td>
+    <td>&nbsp;</td>
+</tr>
+<tr>               
+    <td> <img src="https://chart.googleapis.com/chart?{!VisitCompleteCountBios}"/> &nbsp;</td>
+</tr>
+<tr>               
+    <td> <img src="https://chart.googleapis.com/chart?{!VisitCompleteCountBios2}"/> &nbsp;</td>
+</tr>
+<tr>               
+    <td> <img src="https://chart.googleapis.com/chart?{!visitComplete3}"/> &nbsp; <br/>
+    <span style="color:#9D9D9D;"><apex:outputText value="{!visitComplete3AccountNames}" escape="false"/></span></td>
+</tr>
+</table>
+
+<!-- 拜访完成情况MD -->
+<table width="700" border="1" cellpadding="0" cellspacing="0" align="center" style="font-size: 12px;display:{!if(blnMDShow,'','none')}">
+<tr>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">拜访完成情况</td>
+    <td>&nbsp;</td>
+</tr>
+<tr>               
+    <td> <img src="https://chart.googleapis.com/chart?{!VisitCompleteCountConditionMD}"/> &nbsp;</td>
+</tr>
+
+</table>
+<br/>
+<!-- 时间分配情况 -->
+<div style="page-break-after:auto;">
+<table style="font-size: 12px;" width="700"  border="1" cellpadding="0" cellspacing="0" align="center">
+<tr>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">时间分配情况</td>
+</tr>
+<tr>
+    <td align="center"> <img src="https://chart.googleapis.com/chart?{!TimeDistributeCondition}"/> &nbsp;</td> 
+</tr>
+</table>
+</div>
+<br/>
+<!-- 主管协防情况  -->
+<table style="font-size: 12px;" width="700" border="1" cellpadding="0" cellspacing="0" align="center">  
+<tr>
+    <td colspan="7" class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">主管协访情况</td>  
+</tr>
+<tr class="theBlackTrStyle">
+    <td width="58">开始时间</td> 
+    <td width="49">客户</td>
+    <td width="57">联系人</td>
+    <td width="164">访前计划</td>
+    <td width="188">访后分析</td>
+    <td width="100">主管评语</td>
+    <td width="70">主管评分</td>
+</tr>
+<apex:repeat value="{!ManHelpConditionList}" var="hel" id="theRepeat"> 
+<tr>
+    <td width="58" valign="top">
+    <apex:outputText value="{0,date,yyyy-MM-dd}">
+    <apex:param value="{!hel.startDate}"/>
+    </apex:outputText> 
+   &nbsp;</td>
+    <td width="49" valign="top"><apex:outputText value="{!hel.account}" escape="false" />&nbsp;</td>
+    <td width="57" valign="top"><apex:outputText value="{!hel.contact}" escape="false" />&nbsp;</td>
+    <td width="164" valign="top"><apex:outputText value="{!hel.plan}" escape="false" />&nbsp;</td>
+    <td width="188" valign="top" style="word-break:break-all"><apex:outputText value="{!hel.analysis}" escape="false" />&nbsp;</td>
+    <td width="100" valign="top"><apex:outputText value="{!hel.remark}" escape="false" />&nbsp;</td>      
+    <td width="70" valign="top"><apex:outputText value="{!hel.Grade}" escape="false" />&nbsp;</td>
+</tr>
+</apex:repeat> 
+</table>
+<br/>
+<!-- 月计划明细 -->
+<table style="font-size: 12px;" width="700" border="1" cellpadding="0" cellspacing="0" align="center"> 
+<tr>
+    <td colspan="5" class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">月计划明细</td>
+</tr>
+    <tr class="theBlackTrStyle">
+    <td width="115">客户</td>
+    <td width="240">拜访目标</td>
+    <td width="247">每月小结</td>
+    <td width="43">计划次数</td>
+    <td width="43">实际拜访次数</td>
+</tr>
+<apex:repeat value="{!monthlyPlanDetailList}" var="theMon">
+<tr>
+    <td valign="top"><apex:outputText value="{!theMon.account}" escape="false" /> &nbsp;</td>
+    <td valign="top"><apex:outputText value="{!theMon.visitTarget}" escape="false" /> &nbsp;</td>
+    <td valign="top"><apex:outputText value="{!theMon.monthSummary}" escape="false" /> &nbsp;</td>
+    <td valign="top"><apex:outputText value="{!theMon.planCount}" escape="false"/> &nbsp;</td>
+    <td valign="top"><apex:outputText value="{!theMon.realCount}" escape="false" /> &nbsp;</td>
+</tr>
+</apex:repeat>
+</table>
+<br/>
+<!-- 今年市场活动情况 -->
+<table style="font-size: 12px;" width="700" border="1" cellpadding="0" cellspacing="0" align="center">
+<tr>
+    <td colspan="9" class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">今年市场活动情况</td>
+</tr>
+<tr class="theBlackTrStyle"> 
+    <td>医院名称</td>
+    <td>联系人姓名</td>
+    <td>联系人类型</td>
+    <td>联系人级别</td>
+    <td>跟进次数</td>
+    <td>市场活动名称</td> 
+    <td>活动开始日期</td>
+    <td>活动状态</td>
+    <td>已参加</td>
+</tr>
+<apex:repeat value="{!activeSignUpList}" var="yearMar">
+<tr>
+    <td valign="top"><apex:outputText value="{!yearMar.hosName}" escape="false" /> &nbsp;</td>
+    <td valign="top"><apex:outputText value="{!yearMar.conName}" escape="false" />&nbsp;</td>
+    <td valign="top"><apex:outputText value="{!yearMar.conType}" />&nbsp;</td> 
+  
+    <td valign="top"><apex:outputText value="{!yearMar.level}" />  &nbsp;</td>  
+    <td valign="top"><apex:outputText value="{!yearMar.flowCount}" /> &nbsp;</td>
+   
+    <td valign="top"><apex:outputText value="{!yearMar.marActName}" escape="false" />&nbsp;</td>
+    <td valign="top">
+        <apex:outputText value="{0,date,yyyy-MM-dd}">
+    <apex:param value="{!yearMar.actStartDate}"/>
+    </apex:outputText> 
+  &nbsp;</td>
+    <td valign="top"><apex:outputText value="{!yearMar.state}" />&nbsp;</td>
+    <td valign="top"><apex:outputText value="{!if(yearMar.isAttend==true,'是','否')}" />&nbsp;</td>  
+</tr>
+</apex:repeat>
+</table>
+<br/>
+
+<!-- 业务机会拜访情况Bios -->
+<table width="700"  border="1" cellpadding="0" cellspacing="0" align="center" style="font-size: 12px;display:{!if(blnBiosShow,'','none')}">
+  <tr>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">业务机会拜访情况</td>
+  </tr>
+  <tr>
+    <td align="center">  
+    <div style="text-align:left;padding-left:20px;  width:100%;">
+        <img alt="业务机会拜访情况" src="{!OpportunityVisitBios}"/>
+    </div>
+    <!-- 
+    <div style="text-align:left; padding-left:20px;color:#999999;width:100%;">
+        <apex:outputText value="{!oppNameOrderListNams}" escape="false"/>
+    </div>
+     -->
+    </td>
+  </tr>
+</table>
+
+<!-- 业务机会阶段情况 --> 
+<!-- bill update 2013-2-22 -->
+<table style="font-size: 12px; display:{!if(!blnMDShow,'','none')}" width="700" border="1" cellpadding="0" cellspacing="0" align="center">
+  <tr>
+    <td class="theRedFont" style="color: red;font-size: 18px;font-weight: bold;">业务机会情况分析</td> 
+    <td>&nbsp;</td>
+  </tr>
+  <tr class="theBlackTrStyle"> 
+    <td class="theBlackFont">当月业务机会在三个月前的阶段</td> 
+    <td class="theBlackFont">当月业务机会阶段</td>
+  </tr>
+  <tr> 
+    <td><img alt="xx" src="{!BeforeThreeMonthOppStageStr}"/>&nbsp;</td> 
+    <td align="center">
+    <img alt="xx" src="{!MonthCurrentOppStageStr}"/> &nbsp;
+    </td>
+  </tr>
+</table>
+<br/>
+
+<!-- 业务机会阶段情况 ——表格 -->
+<!-- bill update 2013-2-22 -->
+<table style="font-size: 12px; display:{!if(!blnMDShow,'','none')}" width="700" border="1" cellpadding="0" cellspacing="0" align="center">
+  <tr class="theRedFont" >
+    <td colspan="7" style="color: red;font-size: 18px;font-weight: bold;">业务机会阶段情况</td>
+  </tr>
+  <tr class="theBlackTrStyle">
+    <td>业务机会名称</td>
+    <td>客户名称</td>
+    <td>阶段</td>
+    <td>可能性（%）</td>
+    <td>结束日期</td>
+    <td>当月事件数</td>
+    <td>当月拜访数</td>
+  </tr>
+  
+<apex:repeat value="{!oppStaList}" var="oppstate" > 
+  <tr>
+    <td valign="top"><apex:outputText value="{!oppstate.opportunityName}" escape="false" />&nbsp;</td>
+    <td valign="top"><apex:outputText value="{!oppstate.account}" escape="false" />&nbsp;</td>
+    <td valign="top"><apex:outputText value="{!oppstate.state}" />&nbsp;</td>
+    <td valign="top"><apex:outputText value="{!oppstate.possibility}" />&nbsp;</td>
+    <td valign="top"><apex:outputText value="{0,date,yyyy-MM-dd}"><apex:param value="{!oppstate.overDate}"/></apex:outputText>  &nbsp;</td>
+    <td valign="top"><apex:outputText value="{!oppstate.monthEventCount}" />&nbsp;</td>
+    <td valign="top"><apex:outputText value="{!oppstate.monthVisitCount}" />&nbsp;</td>
+  </tr>
+</apex:repeat> 
+</table>
+<br/>
+
+    </body>
+</html>
+</apex:page>

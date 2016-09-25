@@ -1,0 +1,156 @@
+<apex:page standardController="Plan__c"  extensions="acePlanViewPageController" tabStyle="ACE_Manager__tab" id="p">
+<style>
+      .th
+      {
+            background-color: grey;
+            text-align: center;
+      }
+    .ta
+      {
+            min-width: 100%;
+            border-collapse:collapse;
+            
+      }
+    .ta,.th,.tr,.td
+      {
+            border:1px solid;
+            padding: 10 50 10 50;
+            border-color: lightgrey;
+
+      } 
+
+      .fontcolor{
+        color:red
+      } 
+</style>
+<script>
+  window.onload = a;
+  function a(){
+    var obj = document.getElementById('p:f:bp:coachsaler');
+    obj.focus();
+  }  
+</script>
+
+    <apex:form id="f">
+    <apex:messages style="color:red"/>
+        
+        <apex:pageblock id="bp">
+        <apex:pageBlockButtons >
+        </apex:pageBlockButtons>
+                <div class="pbSubheader brandTertiaryBgr first tertiaryPalette">
+                <h3>辅导计划信息</h3>
+                </div>
+
+                <div style="margin-left:11%;padding-bottom: 10px;padding-top: 10px;">
+                <div style="float: left;width:50%;">
+                <b>被辅导人:</b>&nbsp;<apex:outputText value="{!selectedUser}" id="coachsaler"/>
+                </div>
+
+                <div style="float: left;width:50%;" >
+                  <b>计划所在周期:</b>&nbsp;<apex:outputText value="{!peroidNow}"/>
+                </div>
+
+                <div style="float: left;width:6%; padding-top: 10px;" >
+                  <b>所有人:</b>
+                </div>
+                <div style="float: left;width:80%;padding-top: 10px;" >
+                  <apex:outputField value="{!plan.OwnerId}"/>
+                </div>
+
+                </div>
+               
+                <div style="margin-left:11%; padding-top: 55px">
+                <b>流程步骤说明：</b>
+                  <ol>
+                    <li>选择代表姓名以开始辅导</li>
+                    <li>辅导计划的目标是依据代表的个人发展需求制定辅导框架和辅导活动共识</li>
+                    <li>查看辅导计划流程，了解发展阶段</li>
+                    <li>每六个月回顾和更新一次</li>
+                  </ol>
+                </div>
+                
+                <div style="margin-left: 11%;">
+                <b>发展阶段定义：</b>
+                  <ol>
+                    <li>收效甚微:难以有效运行这项技能，常常需要指导和监督</li>
+                    <li>有待提高:大多数情况下能够有效使用这项技能，有事需要指导和帮助</li>
+                    <li>卓越有效:持续运用这项技能</li>
+                    <li>堪称模范:作为榜样，指导或辅导学习这项技能</li>
+                    <li>不适用:不适合所在职位</li>
+                  </ol>
+                </div>
+                
+                
+               <apex:outputPanel id="setting" >
+               <div class="pbSubheader brandTertiaryBgr first tertiaryPalette">
+               <h3>发展阶段及重点领域设置</h3></div>
+                <div class="div" id = "competencyAndQuestion" style="margin-top: 3%;margin-bottom: 3%;margin-left: 2%;margin-right: 2%;">
+                    
+                    <table class="ta"> 
+                        <tr class="tr">
+                        <th class="th" width="34%">技能</th>
+                        <th class="th" width="13%">上周期</th>
+                        <th class="th" width="47%">能力模型</th>
+                        <th class="th"  width="6%">重点领域</th>
+                        </tr>
+                        <apex:repeat value="{!compentencyAndQuesList}" var="item">
+                        <tr class="tr">
+                            <td class="td" colspan="4" style="background-color: lightgrey">
+                            {!item.com.Name}
+                            </td>
+                        </tr>
+                          <apex:repeat value="{!item.planDetailList}" var="detail">
+                          <tr class="tr">
+                              
+                              <td class="td">
+                              {!detail.question.Details__c}
+                              </td>
+  
+                              <td class="td"  style="text-align:center">
+                              <apex:outputLabel value="{!detail.lastPeriodAnswer}"/>  
+                              </td>
+
+                              <td class="td" align="center">
+                              <apex:selectRadio layout="lineDirection" value="{!detail.answer}" label="" disabled="true">
+                              <apex:selectOptions value="{!options}"/>
+                              </apex:selectRadio>
+                              </td>
+
+                              <td align="center" class="td">
+                              <apex:inputcheckbox value="{!detail.isFocusArea}" disabled="true"/>
+                              </td>
+
+                          </tr>
+                          </apex:repeat>
+                        </apex:repeat>     
+                    </table>
+                </div>
+                </apex:outputPanel>
+             
+
+               <div class="pbSubheader brandTertiaryBgr first tertiaryPalette">
+               <h3>重点领域说明</h3>
+               </div>
+           
+            <apex:outputPanel >
+                  <table style="width:100%">
+                  <tr>
+                    <td width="60%">
+                        <div style="margin-top: 3%;margin-left: 5%">
+                        <b>重点领域说明:&nbsp;</b><apex:outputText value="{!FocusAreaNote}" 
+                                           style="width: 80%;height: 100px;vertical-align:top"/>
+                        </div>
+                    </td>
+                    <td width="40%">
+                        <div style="margin-left:35%;padding-top: 5%;">
+                        <b>辅导次数:</b>&nbsp;
+                         <apex:outputText value="{!coachTimes}"/>
+                        
+                        </div>  
+                    </td>
+                  </tr>
+                  </table> 
+            </apex:outputPanel>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

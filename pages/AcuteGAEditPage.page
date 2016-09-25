@@ -1,0 +1,36 @@
+<apex:page standardController="Acute_GA__c" extensions="AcuteGAEditController" tabStyle="account">
+<apex:form >
+<apex:sectionHeader title="急重症医疗保险政策编辑" subtitle="{!acute.Name}">
+</apex:sectionHeader>
+<apex:pageBlock id="p">
+<apex:messages style="color:red"/>
+<apex:pageBlockButtons >
+<apex:commandButton value="保存" action="{!save}"/>
+<apex:commandButton value="返回" action="{!back}" immediate="true"/>
+</apex:pageBlockButtons>
+<apex:pageBlockSection title="基本信息" columns="2">
+<apex:outputField value="{!acute.GA_Acute_City__c}"/>
+<apex:outputField value="{!acute.GA_Acute_Year__c}"/>
+<apex:inputField value="{!acute.Name}" required="true"/>
+<apex:inputField value="{!acute.GA_Acute_ProjectName__c}"/>
+<apex:inputField value="{!acute.GA_Acute_ProjectContect__c}"/>
+</apex:pageBlockSection>
+<apex:pageBlockSection title="区域政策评估项" id="pb2">
+<apex:actionRegion >
+<div style="margin-left: 20%">
+<b>除外内容:</b><apex:inputField value="{!acute.GA_Acute_Exception__c}" required="true">
+<apex:actionSupport event="onchange" action="{!getIsAllowException}" reRender="pb2" />
+</apex:inputField>
+</div>
+</apex:actionRegion>
+<apex:inputField value="{!acute.GA_Acute_ExpensePercent__c}" rendered="{!isAllowException}" required="true"/>
+<apex:inputField value="{!acute.GA_Acute_Unit__c}" />
+<apex:inputField value="{!acute.GA_Acute_StandardPrice__c}"/>
+<apex:inputField value="{!acute.GA_Acute_Price__c}" required="true"/>
+<apex:inputField value="{!acute.GA_Acute_ProjectExpensePercent__c}" required="true"/>
+<apex:inputField value="{!acute.GA_Acute_SetBid__c}" required="true"/>
+<apex:inputField value="{!acute.GA_Acute_explain__c}"/>
+</apex:pageBlockSection>
+</apex:pageBlock>
+</apex:form>    
+</apex:page>

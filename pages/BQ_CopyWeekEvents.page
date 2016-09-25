@@ -1,0 +1,69 @@
+<apex:page Controller="BQ_CtrlCopyWeekEvents" id="mypage" >
+	<script>
+		   function RemoveC(){
+	   
+	   }
+		function checkAll(cb)
+		{
+		    var inputElem = document.getElementsByTagName("input");
+		    for(var i=0; i<inputElem.length; i++)
+		    {
+		        if(inputElem[i].id.indexOf("selectOpt")!=-1)
+		        inputElem[i].checked = cb.checked;
+		    }
+		} 
+		function  Confirm()
+		{
+			var win = window.confirm("您确认要复制所选事件吗？");
+			if(!win)
+			{
+				return false;
+			}
+		}
+	</script>
+	<apex:form id="ert" >
+		<apex:pageBlock id="myblockid" >
+			<apex:pageMessages />
+			<apex:actionFunction action="{!SearchEvents}" name="SearchEventsJs" rerender="ert" status="myStatus"/>
+		<div Style="font-family: 微软雅黑;font-size: 14px;">
+		被复制周&nbsp;<apex:inputText value="{!LastDate}" id="inputdateid" onfocus="RemoveC()" onmousedown="DatePicker.pickDate(true, 'mypage:ert:myblockid:inputdateid', false);" onchange="SearchEventsJs()" style="width:80px"/>
+		&nbsp;<apex:image url="{!$Resource.V2_help}" title="被复制周：所选日期所在周所有的事件如果被勾选将会被复制到目标周。"/>&nbsp;&nbsp;&nbsp;&nbsp;
+		目标周&nbsp;<apex:inputText value="{!ThisDate}" id="inputdateid2" onfocus="RemoveC()" onmousedown="DatePicker.pickDate(true, 'mypage:ert:myblockid:inputdateid2', false);" style="width:80px"/>
+		&nbsp;<apex:image url="{!$Resource.V2_help}" title="目标周：点击开始复制按钮，被复制周的勾选事件将会复制到所选日期的所在周。"/>	
+		&nbsp;&nbsp;<apex:commandButton value="开始复制" onclick="return Confirm()" action="{!CopyEvents}"/>
+		</div>
+		<apex:pageBlockTable value="{!Listsobjev}" var="sobj"  width="100%">
+			<apex:column width="2%">
+				<apex:facet name="header">
+					 <input type="checkbox" id="chkall" onclick="checkAll(this)" />
+				</apex:facet>
+				 <apex:inputCheckbox value="{!sobj.IsChoice}" id="selectOpt"/>
+			</apex:column>
+			<apex:column headerValue="完成" width="3%">
+				<apex:outputField value="{!sobj.ev.Done__c}"/>
+			</apex:column>
+			<apex:column headerValue="联系人" width="6%">
+				<apex:outputField value="{!sobj.ev.WhoId}"/>
+			</apex:column>
+			<apex:column headerValue="主题" width="10%">
+				<apex:outputLink value="/{!sobj.ev.Id}" target="_blank" id="theLink">{!sobj.ev.Subject}</apex:outputLink>
+			</apex:column>
+			<apex:column headerValue="行动类型" width="10%">
+				<apex:outputField value="{!sobj.ev.SubjectType__c}"/>
+			</apex:column>
+			<apex:column headerValue="开始时间" width="13%">
+				<apex:outputField value="{!sobj.ev.StartDateTime}"/>
+			</apex:column>
+			<apex:column headerValue="结束时间" width="13%">
+				<apex:outputField value="{!sobj.ev.EndDateTime}"/>
+			</apex:column>
+			<apex:column headerValue="计划" width="23%">
+				<apex:outputField value="{!sobj.ev.GAPlan__c}"/>
+			</apex:column>
+			<apex:column headerValue="结果分析" width="23%">
+				<apex:outputField value="{!sobj.ev.GAExecuteResult__c}"/>
+			</apex:column>
+		</apex:pageBlockTable>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

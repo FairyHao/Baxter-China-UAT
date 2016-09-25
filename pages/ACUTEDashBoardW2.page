@@ -1,0 +1,45 @@
+<apex:page controller="ACUTEDashBoardAction">
+  <apex:form >
+    <apex:pageBlock id="pageBlock">
+      <apex:pageMessages />
+      <div>
+      <span>选择用户:</span>
+      <apex:inputField value="{!selectUser.OwnerId}" required="false"/>
+      <apex:selectList value="{!selectMonth}" size="1">
+        <apex:selectOption itemLabel="本月" itemValue="Y" />
+        <apex:selectOption itemLabel="上月" itemValue="N" />
+      </apex:selectList>
+      <apex:commandButton value="查询" action="{!doActionByUser}" />
+      </div>
+      <table class="list"  border="0" cellpadding="0" cellspacing="0" title="ACUTE">
+        <colgroup span="2"></colgroup>
+        <thead class="">
+          <tr class="headerRow">
+            <th class="headerRow" scope="col" colspan="1" style="width:25%">
+              <div>姓名</div>
+            </th>
+            <th class="headerRow" scope="col" colspan="1" style="width:25%">
+              <div>科室会</div>
+            </th>
+            <th class="headerRow" scope="col" colspan="1" style="width:25%">
+              <div>耗材业务<br/>机会数</div>
+            </th>
+            <th class="headerRow" scope="col" colspan="1" style="width:25%">
+              <div>耗材业务<br/>机会拜访数</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <apex:repeat var="obj" value="{!entityList}" >
+          <tr class="dataRow even  first" onmouseover="if (window.hiOn){hiOn(this);} " onmouseout="if (window.hiOff){hiOff(this);} " onblur="if (window.hiOff){hiOff(this);}" onfocus="if (window.hiOn){hiOn(this);}">
+            <td class="dataCell" colspan="1">{!obj.userName}</td>
+            <td class="dataCell" colspan="1" ><apex:image value="{!URLFOR($Resource.colorPicture,obj.groupSellingColor)}.png" />&nbsp;&nbsp;{!obj.groupSellingCount}</td>
+            <td class="dataCell" colspan="1"><apex:image value="{!URLFOR($Resource.colorPicture,obj.setsOppColor)}.png" />&nbsp;&nbsp;{!obj.setsOppCount}</td>
+            <td class="dataCell" colspan="1"><apex:image value="{!URLFOR($Resource.colorPicture,obj.callOfSetOppColor)}.png" />&nbsp;&nbsp;{!obj.callOfSetOppCount}</td>
+          </tr>
+          </apex:repeat>
+        </tbody>
+      </table>
+    </apex:pageBlock>
+  </apex:form>
+</apex:page>

@@ -1,0 +1,109 @@
+<apex:page showHeader="True" sidebar="True" controller="aceGuidePageController" action="{!checkUserGoDifPage}"> 
+
+<style type="text/css">
+.myClass{
+color:white !important;
+font-family: Arial, Arial, Helvetica, sans-serif !important;
+font-size: 15px !important;
+background:#01C1B2 !important;
+width: 233px;
+height: 61px;
+}
+</style>
+
+<style type="text/css">
+.myClass2{
+color:#005CA2 !important;
+font-family: Arial, Arial, Helvetica, sans-serif !important;
+font-size: 15px !important;
+background:White !important;
+width: 233px;
+height: 61px;
+}
+</style>
+
+<style>
+.buttonClass {
+  background-image:url('{!$Resource.CoachingPlan}');
+  width:100px;
+  height:50px
+}
+</style>
+
+
+
+    <apex:form >
+    <apex:messages style="color:red !important"/>
+    <table cellspacing="2" cellpadding="2" align="center">
+        
+        <tr width="200" >
+            <td>
+                <center/><apex:image url="{!$Resource.AceManagerNew}"/>  
+            </td>
+        </tr>        
+        <br/>
+        </table>
+        <table cellspacing="2" cellpadding="3" align="center">
+        <tr width="200">
+        <td width="10">
+        </td>
+        <td width="27" valign="top"> 
+        <apex:commandbutton styleClass="myClass" value="辅导计划" action="{!goToCoachingPlan}"/>
+        <div class="description">
+            <style type="text/css">
+                p { color:#898989 !important;
+                    font-family: Arial, Arial, Helvetica, sans-serif !important;
+                    font-size: 11px !important;
+                    font-weight: lighter; !important;}
+            </style>
+            <style type="text/css">
+                ul { color:#898989 !important;
+                    font-family: Arial, Arial, Helvetica, sans-serif !important;
+                    font-size: 11px !important;
+                    font-weight: lighter; !important;
+                    margin-top:0px; padding-left:5px; !important}
+            </style>                        
+            <p>
+             此标签下包含了辅导计划相关内容。
+            </p>
+            <p>
+              点击看到如下版面：
+            </p>
+            
+                <ul>
+                
+                  <li>已经创建的辅导计划，以及新建辅导计划</li>
+                  
+                  <li>已经分配的辅导次数</li>
+                  
+                  <li>重点领域</li>
+                
+                </ul>
+            
+          </div>
+          </td>
+          <td width="27" valign="top">
+          <apex:commandbutton styleClass="myClass" value="辅导课程" action="{!goToCoachingSession}"/>
+          <div class="description">
+
+            <p>
+              此标签下包含了辅导课程相关数据。
+            </p>
+            <p>
+              点击看到如下版面：
+            </p>
+            <ul>
+              <li>辅导对象</li>
+              <li>辅导完成状况</li>
+              <li>每个辅导的记录</li>
+              <li>SEM对SM进行辅导时，可查看SEM对SM辅导课程列表、以及该SM对SR辅导课程列表</li>
+              <li>SM对SR进行辅导时，可查看SM对SR辅导课程列表、以及辅导课程当天的客户协防拜访</li>
+            </ul>
+          </div>
+          </td>
+        
+          </tr>         
+          
+    </table>
+    </apex:form>
+</apex:page>

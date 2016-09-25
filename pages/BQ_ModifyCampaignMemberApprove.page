@@ -1,0 +1,92 @@
+<apex:page Controller="BQ_CtrModifyCampaignMemberApprove" showheader="false">
+<style type="text/css">
+	.dateFormat{display: none}
+</style>
+<apex:form id="myform">
+	<apex:pageblock id="myblock">
+		<div align="left" style="font-family: 微软雅黑; font-size: 16px;">
+			<apex:outputLabel value="修改市场活动成员审批"/><br/>
+		</div>
+		<div align="left" style="font-family: 微软雅黑; font-size: 13px;"> 
+			<apex:outputLabel value="市场活动：{!Campaign.Name}"/><br/>
+			<apex:outputLabel value="1. 下表列出与您相关的市场活动成员审批项" /><br/>
+			<apex:outputLabel value="2. 如果您是审批人，需要您参与审批的单元格会处于可以修改的状态，您可以选择通过或拒绝" /><br/>
+			<apex:outputLabel value="3. 如果您是提交人，整个列表对您都是只读的，您可以从列表中看到由您提交审批的状态" /><br/>
+		</div>
+		<apex:outputPanel id="TabPanel"> 
+		<apex:pageMessages />
+		<hr size= "0" color="#CC9900"  ></hr>
+		<apex:pageBlockTable value="{!ActionRowList}" var="Row" rendered="{!IsEnabledTab}" id="mytable"  cellspacing="0" cellpadding="0" border="0">
+			<apex:column headervalue="主管审批 " Style="width:60px">
+		        <apex:inputField value="{!Row.ApproveRequest.SupervisorApprove__c}" rendered="{!Row.EnabledSupervisorApprove}" style="width:100%"/>
+		        <apex:outputField value="{!Row.ApproveRequest.SupervisorApprove__c}" rendered="{!Row.DisabledSupervisorApprove}"/>
+			</apex:column>
+			<apex:column headervalue="大区经理审批 " Style="width:60px">
+		        <apex:inputField value="{!Row.ApproveRequest.AreaManagerApprove__c}" rendered="{!Row.EnabledAreaManagerApprove}" style="width:100%"/>
+		        <apex:outputField value="{!Row.ApproveRequest.AreaManagerApprove__c}" rendered="{!Row.DisabledAreaManagerApprove}"/>
+			</apex:column>
+			<apex:column headervalue="市场部审批 " Style="width:60px">
+		        <apex:inputField value="{!Row.ApproveRequest.MarketingApprove__c}" rendered="{!Row.EnabledMarketingApprove}" style="width:100%"/>
+		        <apex:outputField value="{!Row.ApproveRequest.MarketingApprove__c}" rendered="{!Row.DisabledMarketingApprove}"/>
+			</apex:column>
+			<apex:column headervalue="操作类型">
+				<apex:outputField value="{!Row.ApproveRequest.Action__c}"/>
+			</apex:column>
+			<apex:column headervalue="联系人">
+				<apex:outputField value="{!Row.ApproveRequest.ContactId__c}"/>
+			</apex:column>
+			<apex:column headervalue="客户">
+				<apex:outputField value="{!Row.ApproveRequest.AccountId__c}"/>
+			</apex:column>
+			<apex:column headervalue="出发日期">
+				<apex:outputField value="{!Row.ApproveRequest.DepartDate__c}"/>
+			</apex:column>
+			<apex:column headervalue="出发航班">
+				<apex:outputField value="{!Row.ApproveRequest.DepartFlight__c}"/>
+			</apex:column>
+			<apex:column headervalue="到达日期">
+				<apex:outputField value="{!Row.ApproveRequest.ArriveDate__c}"/>
+			</apex:column>
+			<apex:column headervalue="到达航班">
+				<apex:outputField value="{!Row.ApproveRequest.ArriveFlight__c}"/>
+			</apex:column>
+			<apex:column headervalue="拒绝原因" Style="width:80px">
+				<apex:inputField value="{!Row.ApproveRequest.RejectReason__c}" id="RejectReason" Style="width:90px"/>
+			</apex:column>
+			<apex:column headervalue="备注">
+				<apex:outputField value="{!Row.ApproveRequest.Comment__c}"/>
+			</apex:column>
+			<apex:column headervalue="提交人">
+				<apex:outputField value="{!Row.ApproveRequest.User__r.Alias}"/>
+			</apex:column>
+			<apex:column headervalue="提交时间">
+				<apex:outputField value="{!Row.ApproveRequest.CreatedDate}"/>
+			</apex:column>
+			<apex:column headervalue="审批步骤">
+				<apex:outputField value="{!Row.ApproveRequest.ApproveStep__c}"/>
+			</apex:column>
+			<apex:column headervalue="审批结果">
+				<apex:outputField value="{!Row.ApproveRequest.ApproveResult__c}"/>
+			</apex:column>
+		</apex:pageBlockTable>
+		<table align="left">
+		<tr>
+		<td>
+		</td>
+		</tr>
+			<tr>
+			<td> 
+			<apex:commandButton value="确定" action="{!Save}" rerender="TabPanel" status="StatusSaving" rendered="{!SaveEnabled}"/>  
+			</td>
+				<td>
+					<apex:actionStatus id="StatusSaving" startText="处理中..."/>
+				</td>
+				<td>
+					<apex:commandButton value="返回市场活动" action="{!ReturnCampaign}"></apex:commandButton>
+				</td>
+			</tr>
+		</table>
+		</apex:outputPanel>
+	</apex:pageblock>
+</apex:form>
+</apex:page>

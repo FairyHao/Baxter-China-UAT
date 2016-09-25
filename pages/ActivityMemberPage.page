@@ -1,0 +1,89 @@
+<apex:page standardController="Campaign" extensions="ActivityMemberController" id="pv">
+<apex:form id="f">
+ 
+<apex:pageBlock >
+<table>
+<tr>
+<td ><apex:commandButton style="width:35px;" value="保存" action="{!save}" reRender="pv:f" status="loading"/></td>
+<td ><apex:commandButton style="width:35px;" value="添加" action="{!add}" reRender="pv:f" status="loading"/></td>
+<td>
+<apex:actionStatus id="loading">
+    <apex:facet name="start">
+        <apex:image id="messageIcon" value="{!$Resource.AjaxAnimation}" />
+    </apex:facet>
+    <apex:facet name="stop">
+    </apex:facet>
+</apex:actionStatus>
+</td>
+<td>
+<apex:outputText value="{!pageMsg}" style="color:red;"/>
+</td>
+</tr>
+</table>
+<apex:outputPanel id="panel">
+<table class="list" cellspacing="0" cellpadding="0" border="0" width="100%" style="padding:0px;margin:0px;border: solid thin #B4B4B4">
+
+<tr class="headerRow" style="background:#F2F3F3;align:center;border-top-color:#B4B4B4;">
+<td class="headerRow" align="center" style="border-top: solid thin #B4B4B4;border-color:#B4B4B4;">
+操作</td>
+<td class="headerRow" align="center" style="border-top: solid thin #B4B4B4;border-color:#B4B4B4;">
+主席</td>
+<td class="headerRow" align="center" style="border-top: solid thin #B4B4B4;border-color:#B4B4B4;">
+讲者</td>
+<td class="headerRow" align="center" style="border-top: solid thin #B4B4B4;border-color:#B4B4B4;">
+姓名</td>
+<td class="headerRow" align="center" style="border-top: solid thin #B4B4B4;border-color:#B4B4B4;">
+演讲主题</td>
+<!-- <td class="headerRow" align="center" style="border-top: solid thin #B4B4B4;border-color:#B4B4B4;">
+投入分</td> -->
+<!-- <td class="headerRow" align="center" style="border-top: solid thin #B4B4B4;border-color:#B4B4B4;">
+表现分</td> -->
+<td class="headerRow" align="center" style="border-top: solid thin #B4B4B4;border-color:#B4B4B4;">
+已参加</td>
+</tr>
+<apex:repeat value="{!menberList}" var="itemw">
+<tr style="text-align: center">
+<td class="dataCell" style="padding-left:1;padding-right:0;border-top-color:#B4B4B4;border-buttom-color:#B4B4B4;width:20%">
+	<apex:commandLink style="{!if(itemw.IsEdit==false,'nothidden','display:none')};" action="{!Upd}" value="编辑" id="Update" reRender="pv:f" status="loading">
+	  <apex:param name="upd"  assignTo="{!Index}" value="{!itemw.Index}"/>
+	 </apex:commandLink>&nbsp;&nbsp;
+    <apex:commandLink action="{!del}" value="删除" id="Delete" reRender="pv:f" status="loading">
+       <apex:param name="del" assignTo="{!Index}" value="{!itemw.Index}"/>
+     </apex:commandLink>
+</td>
+<td class="dataCell" style="padding-left:1;padding-right:0;border-top-color:#B4B4B4;border-buttom-color:#B4B4B4;width:5%">
+    <apex:inputField value="{!itemw.item.MA_Chief__c}" rendered="{!itemw.IsEdit}"/>
+    <apex:outputField value="{!itemw.item.MA_Chief__c}" rendered="{!!itemw.IsEdit}"/>
+</td>
+<td class="dataCell" style="padding-left:1;padding-right:0;border-top-color:#B4B4B4;border-buttom-color:#B4B4B4;width:5%">
+    <apex:inputField value="{!itemw.item.MA_Speaker__c}" rendered="{!itemw.IsEdit}"/>
+    <apex:outputField value="{!itemw.item.MA_Speaker__c}" rendered="{!!itemw.IsEdit}"/>
+</td>
+<td class="dataCell" style="padding-left:1;padding-right:0;border-top-color:#B4B4B4;border-buttom-color:#B4B4B4;width:25%">
+    <apex:inputField value="{!itemw.item.ContactId}" rendered="{!itemw.IsEdit}"/>
+    <apex:outputField value="{!itemw.item.ContactId}" rendered="{!!itemw.IsEdit}"/>
+</td>
+<td class="dataCell" style="padding-left:1;padding-right:0;border-top-color:#B4B4B4;border-buttom-color:#B4B4B4;width:25%">
+    <apex:inputField value="{!itemw.item.MA_SpeechTitle__c}" rendered="{!itemw.IsEdit}"/>
+    <apex:outputField value="{!itemw.item.MA_SpeechTitle__c}" rendered="{!!itemw.IsEdit}"/>
+</td>
+<!-- <td class="dataCell" style="padding-left:1;padding-right:0;border-top-color:#B4B4B4;border-buttom-color:#B4B4B4;width:10%">
+    <apex:outputField value="{!itemw.item.MA_ParticipateScore__c}"/>
+</td> -->
+<!-- <td class="dataCell" style="padding-left:1;padding-right:0;border-top-color:#B4B4B4;border-buttom-color:#B4B4B4;width:10%">
+    <apex:inputField value="{!itemw.item.MA_ActScore__c}" style="width:70%" rendered="{!itemw.IsEdit}"/>
+    <apex:outputField value="{!itemw.item.MA_ActScore__c}" style="width:70%"  rendered="{!!itemw.IsEdit }"/>
+</td> -->
+<td class="dataCell" style="padding-left:1;padding-right:0;border-top-color:#B4B4B4;border-buttom-color:#B4B4B4;width:10%">
+    <apex:inputField value="{!itemw.item.MA_involved__c}" rendered="{!itemw.IsEdit}"/>
+    <apex:outputField value="{!itemw.item.MA_involved__c}" rendered="{!!itemw.IsEdit}"/>
+</td>
+</tr>
+</apex:repeat>
+
+</table>
+</apex:outputPanel>
+
+</apex:pageBlock>
+</apex:form>
+</apex:page>

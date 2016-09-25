@@ -1,0 +1,105 @@
+<apex:page controller="BQ_CtrlAccountTeamReplace" >
+<apex:includeScript value="/soap/ajax/27.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/27.0/apex.js"/>
+<script>
+function checkAll(cb)
+{
+    var inputElem = document.getElementsByTagName("input");
+    for(var i=0; i<inputElem.length; i++)
+    {
+    if(inputElem[i].id.indexOf("checkedone")!=-1)
+    inputElem[i].checked = cb.checked;
+    }
+} 
+</script>
+	<apex:sectionHeader subtitle="批量替换/删除客户小组成员"/>
+	<apex:form >
+		<apex:pageBlock id="theBlock">
+		<apex:pageMessages escape="false"/>
+            <apex:pageBlockSection title="请选择需要被替换/删除的成员" rendered="{!blnIsSearch}">
+                <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="需要被替换/删除的成员"/>
+	                <apex:inputField value="{!vAccTeamUser.V2_User__c}" >
+	                    <apex:actionSupport event="onchange" 
+	                                    action="{!searchAccountByUser}" 
+	                                    rerender="theBlock" 
+	                                    status="saveStatus"/>
+	                    <apex:actionStatus id="saveStatus">
+                        <apex:facet name="start">
+                            <apex:image id="messageIcon" value="{!$Resource.AjaxAnimation}" />
+                        </apex:facet>
+                        <apex:facet name="stop">
+                        </apex:facet>
+                    </apex:actionStatus>
+	                </apex:inputField>
+	            </apex:pageBlockSectionItem>
+	            
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="请选择客户" id="AccList" rendered="{!blnIsSearch}">
+                <apex:pageBlockTable value="{!list_AccountTeamW}" var="Atw">
+	                <apex:column width="5px">
+	                <apex:facet name="header">
+	                    <apex:inputCheckbox id="allCheck" >
+	                    <apex:actionSupport event="onclick" onsubmit="checkAll(this)" rerender="" />
+	                    </apex:inputCheckbox>
+	                </apex:facet>
+	                    <apex:inputCheckbox value="{!Atw.blnSelected}" id="checkedone" />
+	                </apex:column>
+	                <apex:column headervalue="客户名称">
+	                    <apex:outputField value="{!Atw.vAccTeam.V2_Account__r.Name}"/>
+	                </apex:column>
+	                <apex:column headervalue="客户类型">
+	                    <apex:outputField value="{!Atw.vAccTeam.V2_Account__r.RecordType.Name}"/>
+	                </apex:column>
+	                <apex:column headervalue="省份">
+	                    <apex:outputField value="{!Atw.vAccTeam.V2_Account__r.Provinces__r.Name}"/>
+	                </apex:column>
+	                <apex:column headervalue="城市">
+	                    <apex:outputField value="{!Atw.vAccTeam.V2_Account__r.Cities__r.Name}"/>
+	                </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="请选择替换的成员" rendered="{!blnIsReplace}">
+                <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="新小组成员"/>
+	                <apex:inputField value="{!vAccTeamDate.V2_NewAccUser__c}" />
+	            </apex:pageBlockSectionItem>
+	            <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="生效日期"/>
+                    <apex:inputField value="{!vAccTeamDate.EffectiveDate__c}" />
+	            </apex:pageBlockSectionItem>
+	            <apex:pageBlockSectionItem >
+	                <apex:outputLabel value="调整原因"/>
+	                <apex:inputField value="{!vAccTeamDate.V2_AdjustReson__c}" />         
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="请填写失效信息" rendered="{!blnIsDelete}">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="失效日期"/>
+                    <apex:inputField value="{!vAccTeamDate.DeleteDate__c}" />
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="调整原因"/>
+                    <apex:inputField value="{!vAccTeamDate.V2_AdjustReson__c}" />         
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageblockButtons location="bottom"  >
+            <apex:actionStatus id="saveStatus2">
+                <apex:facet name="start">
+                    <apex:image id="messageIcon" value="{!$Resource.AjaxAnimation}" />
+                </apex:facet>
+                <apex:facet name="stop">
+                </apex:facet>
+            </apex:actionStatus>
+            <apex:commandButton value="替换" action="{!doReplace}" reRender="theBlock" rendered="{!blnIsSearch}" status="saveStatus2"/>
+            <apex:commandButton value="删除" action="{!doDelete}" reRender="theBlock" rendered="{!blnIsSearch}" status="saveStatus2"/>
+            <apex:commandButton value="保存" action="{!replaceSave}" reRender="theBlock" rendered="{!blnIsReplace}" status="saveStatus2"/>
+            <apex:commandButton value="返回上一页" action="{!doCancel}" reRender="theBlock" rendered="{!blnIsReplace}" status="saveStatus2"/>
+            <apex:commandButton value="保存" action="{!deleteSave}" reRender="theBlock" rendered="{!blnIsDelete}" status="saveStatus2"/>
+            <apex:commandButton value="返回上一页" action="{!doCancel}" reRender="theBlock" rendered="{!blnIsDelete}" status="saveStatus2"/>
+            </apex:pageblockButtons>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

@@ -1,0 +1,58 @@
+<apex:page controller="BQ_CustomCalculateKPI">
+	<apex:form id="myform">
+        <apex:pageblock >
+        <apex:pageMessages />
+            <div align="center" style="font-family: 微软雅黑; font-size: 16px;">YTD销售数据/KPI计算</div>
+            <div align="left" style="font-family: 微软雅黑; font-size: 13px;">
+                1.选择年份和月份，计算对应的值。<br/>
+                2.如果批量计算拜访统计和KPI计算或者YTD销售数据，由于数据量大请您操作完毕后稍等一段时间再去查看 <br/>
+            </div>
+            <hr size= "0" color="#99CC33"  ></hr>
+            <table align="center" cellpadding ="5" border="0">
+            	<tr  style="text-align: center;">
+            		<td colspan="3"><h1>拜访统计和KPI计算</h1></td>
+            	</tr>
+                <tr>
+                    <td Style="font-family: 微软雅黑;font-size: 15px;">
+                        年份:
+                        <apex:selectList size="1" value="{!y1}" >
+                            <apex:selectOptions value="{!year}"/>
+                        </apex:selectList>
+                    </td>
+                    <td Style="font-family: 微软雅黑;font-size: 15px;">
+                        月份：
+                        <apex:selectList size="1"  value="{!m1}" >
+                                <apex:selectOptions value="{!month}"/>
+                        </apex:selectList>
+                    </td>
+                    <td>
+                        <apex:commandButton value="开始计算" action="{!BeginKPI}" disabled="{!f1}"/>
+                    </td>
+                </tr>
+            </table>
+            
+            <table align="center" cellpadding ="5" border="0">
+            	<tr  style="text-align: center;">
+            		<td colspan="3"><h1>YTD销售数据计算</h1></td>
+            	</tr>
+                <tr>
+                    <td Style="font-family: 微软雅黑;font-size: 15px;">
+                        年份:
+                        <apex:selectList size="1" value="{!y2}" >
+                            <apex:selectOptions value="{!year}"/>
+                        </apex:selectList>
+                    </td>
+                    <td Style="font-family: 微软雅黑;font-size: 15px;">
+                        月份：
+                        <apex:selectList size="1"  value="{!m2}" >
+                                <apex:selectOptions value="{!month}"/>
+                        </apex:selectList>
+                    </td>
+                    <td>
+                        <apex:commandButton value="开始计算" action="{!BeginSalse}" disabled="{!f2}"/>
+                    </td>
+                </tr>
+            </table>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

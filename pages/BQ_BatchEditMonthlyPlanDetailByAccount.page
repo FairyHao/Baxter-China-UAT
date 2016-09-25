@@ -1,0 +1,48 @@
+<apex:page Controller="BQ_BatchEditMonthlyPlanDetailByAccount" showheader="false">
+	<apex:form >
+		<apex:pageblock >
+		<apex:pageMessages />
+			<div align="left" style="font-family: 微软雅黑; font-size: 16px;">批量维护明细按医院</div>
+			<hr size= "3" color=" #336600" ></hr>
+			<apex:pageblocktable value="{!mpdAcclist}" var="mpdacc" align="center">
+<!--				<apex:facet name="header" ></apex:facet>-->
+	        	<apex:column headerValue="客户">
+	        		<apex:OutputField value="{!mpdacc.Account__c}"  />
+	        	</apex:column>
+	        	<apex:column headerValue="拜访目标">
+	        		<apex:inputField value="{!mpdacc.CallTarget__c}" rendered="{!if(Isdisable,false,true)}"/>
+	        		<apex:outputField value="{!mpdacc.CallTarget__c}" rendered="{!if(Isdisable,true,false)}"/>
+	        	</apex:column>
+	        	<apex:column headerValue="每月小结">
+	        		<apex:inputField value="{!mpdacc.MonthlyBrief__c}"/>
+	        	</apex:column>
+	        	<apex:column headerValue="计划次数">
+	        		<apex:outputField value="{!mpdacc.PlannedTimes__c}"/>
+	        	</apex:column>
+	        	<apex:column headerValue="实际拜访次数">
+	        		<apex:outputField value="{!mpdacc.ActualTimes__c}"/>
+	        	</apex:column>
+			</apex:pageblocktable>
+			<table align="left">
+				<tr>
+					<td>
+						<apex:commandButton value="保存" action="{!SaveMpDetailAcc}" />
+					</td>
+				</tr>
+			</table>
+		</apex:pageblock>
+	</apex:form>
+	<script>
+		if({!IsClose})
+		{
+			CloseWindow(); 
+		}
+		function CloseWindow()
+		{
+			var url = "/"+"{!MonthlyPlanId}";
+			//alert("########"+url);
+			opener.document.location= url;
+			window.close();
+		}
+	</script>
+</apex:page>

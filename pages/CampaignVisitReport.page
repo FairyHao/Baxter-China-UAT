@@ -1,0 +1,3 @@
+<apex:page showheader="false">
+<c:CampaignVisitReport ReportToId="005O0000000sJ8f"></c:CampaignVisitReport>
+</apex:page>

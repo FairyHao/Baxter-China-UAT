@@ -1,0 +1,120 @@
+<apex:page Controller="BQ_CtrModifyCampaignMember" showheader="false">
+<style type="text/css">
+	.dateFormat{display: none}
+</style>
+	<script>
+		function checkAll(cb)
+		{
+		    var inputElem = document.getElementsByTagName("input"); 
+		    for(var i=0; i<inputElem.length; i++)
+		    {
+		        if(inputElem[i].id.indexOf("selectOpt")!=-1)
+		        inputElem[i].checked = cb.checked;
+		    }
+		}  
+	</script>
+	<apex:form id="myform">
+		<apex:pageblock id="myblock">
+			<div align="left" style="font-family: 微软雅黑; font-size: 16px;">
+				<apex:outputLabel value="修改市场活动成员"/><br/>
+			</div>
+			<div align="left" style="font-family: 微软雅黑; font-size: 13px;"> 
+				<apex:outputLabel value="市场活动：{!Campaign.Name}"/><br/>
+				<apex:outputLabel value="1. 您可以查看您以前提交的市场活动成员修改审批项目" /><br/>
+				<apex:outputLabel value="2. 您可以对对已有的市场活动成员进行删除操作" /><br/>
+				<apex:outputLabel value="3. 您可以添加一个新的市场活动成员" /><br/>
+				<apex:outputLabel value="4. 在您点击“保存”按钮后，您的修改审批会被提交，经过 主管({!Supervisor.Alias})->大区经理({!AreaManager.Alias})->市场部({!Campaign.Owner.Alias}) 的审批后您的修改才会正式生效" /><br/>
+			</div>
+			<apex:outputPanel id="TabPanel"> 
+			<apex:pageMessages />
+			<hr size= "0" color="#CC9900"  ></hr>
+			<apex:actionFunction action="{!CheckContact}" name="CheckContactJs" rerender="TabPanel" status="StatusHandling">
+				<apex:param name="Param1" assignTo="{!TiggerRowId}" value=""/>
+			</apex:actionFunction>
+			<apex:pageBlockTable value="{!ActionRowList}" var="Row" rendered="{!IsEnabled}" id="mytable"  cellspacing="0" cellpadding="0" border="0">
+				<apex:column Style="width:15px">
+					<apex:facet name="header"> 
+						<!--<input type="checkbox" id="chkall" onclick="checkAll(this)" Style="width:15px"/> -->
+					</apex:facet>
+					<!--<apex:inputCheckbox disabled="{!Row.FieldDisabled}" value="{!Row.IsCancel}" id="selectOpt" Style="width:15px"/> -->
+					<apex:commandButton value="-" action="{!CancelRow}" rerender="TabPanel" status="StatusHandling" rendered="{!Row.FieldEnabled}">
+						<apex:param name="Param1" assignTo="{!TiggerRowId}" value="{!Row.RowId}" />
+					</apex:commandButton>
+				</apex:column>
+				<apex:column headervalue="操作类型" Style="width:60px">
+					<apex:selectList value="{!Row.CampaignMemberHistory.Action__c}" rendered="{!Row.ActionEnabled}" size="1" style="width:60px">
+			            <apex:selectOptions value="{!Row.Options}"/>
+			        </apex:selectList> 
+			        <apex:outputField value="{!Row.CampaignMemberHistory.Action__c}" rendered="{!Row.ActionDisabled}"/>
+				</apex:column>
+				<apex:column headervalue="联系人" Style="width:90px">
+					<apex:inputField value="{!Row.CampaignMemberHistory.ContactId__c}" onchange="CheckContactJs('{!Row.RowId}')" rendered="{!Row.FieldEnabled}" style="width:70%"/>
+					<apex:outputField value="{!Row.CampaignMemberHistory.ContactId__c}" rendered="{!Row.FieldDisabled}"/>
+				</apex:column>
+				<apex:column headervalue="客户">
+					<apex:outputField value="{!Row.CampaignMemberHistory.AccountId__c}"/>
+				</apex:column>
+				<apex:column headervalue="出发日期">
+					<apex:inputField value="{!Row.CampaignMemberHistory.DepartDate__c}" rendered="{!Row.FieldEnabled}" id="DepartDate" Style="width:100%" onfocus="ShowDate(this)"/>
+					<apex:outputField value="{!Row.CampaignMemberHistory.DepartDate__c}" rendered="{!Row.FieldDisabled}"/>
+				</apex:column>
+				<apex:column headervalue="出发航班">
+					<apex:inputField value="{!Row.CampaignMemberHistory.DepartFlight__c}" rendered="{!Row.FieldEnabled}" Style="width:100%"/>
+					<apex:outputField value="{!Row.CampaignMemberHistory.DepartFlight__c}" rendered="{!Row.FieldDisabled}"/>
+				</apex:column>
+				<apex:column headervalue="到达日期">
+					<apex:inputField value="{!Row.CampaignMemberHistory.ArriveDate__c}" rendered="{!Row.FieldEnabled}" id="ArriveDate" Style="width:100%" onfocus="ShowDate(this)"/>
+					<apex:outputField value="{!Row.CampaignMemberHistory.ArriveDate__c}" rendered="{!Row.FieldDisabled}"/>
+				</apex:column>
+				<apex:column headervalue="到达航班">
+					<apex:inputField value="{!Row.CampaignMemberHistory.ArriveFlight__c}" rendered="{!Row.FieldEnabled}" Style="width:100%"/>
+					<apex:outputField value="{!Row.CampaignMemberHistory.ArriveFlight__c}" rendered="{!Row.FieldDisabled}"/>
+				</apex:column>
+				<apex:column headervalue="备注">
+					<apex:inputTextarea value="{!Row.CampaignMemberHistory.Comment__c}" rendered="{!Row.FieldEnabled}" rows="1" Style="width:100%;height:17px"/>
+					<apex:outputField value="{!Row.CampaignMemberHistory.Comment__c}" rendered="{!Row.FieldDisabled}"/>
+				</apex:column>
+				<apex:column headervalue="审批步骤">
+					<apex:outputField value="{!Row.CampaignMemberHistory.ApproveStep__c}"/>
+				</apex:column>
+				<apex:column headervalue="主管审批">
+					<apex:outputField value="{!Row.CampaignMemberHistory.SupervisorApprove__c}"/>
+				</apex:column>
+				<apex:column headervalue="区域审批">
+					<apex:outputField value="{!Row.CampaignMemberHistory.AreaManagerApprove__c}"/>
+				</apex:column>
+				<apex:column headervalue="市场部审批">
+					<apex:outputField value="{!Row.CampaignMemberHistory.MarketingApprove__c}"/>
+				</apex:column>
+				<apex:column headervalue="提交时间">
+					<apex:outputField value="{!Row.CampaignMemberHistory.CreatedDate}"/>
+				</apex:column>
+			</apex:pageBlockTable>
+			<table align="left">
+			<tr>
+			<td>
+			
+			</td>
+			</tr>
+				<tr>
+					<td></td>
+					<td>
+						<apex:commandButton value=" + " action="{!Add}" rerender="TabPanel" status="StatusHandling" rendered="{!IsEnabled}"/> 
+					</td>
+					<td>
+						<apex:commandButton value="保存" action="{!Save}" rerender="TabPanel" status="StatusSaving" rendered="{!SaveIsEnabled}"/>  
+					</td>
+					<td>
+						<apex:actionStatus id="StatusHandling" startText="处理中..."/>
+						<apex:actionStatus id="StatusSaving" startText="保存中..."/>
+					</td>
+					<td>
+					<apex:commandButton value="返回市场活动" action="{!ReturnCampaign}"></apex:commandButton>
+					</td>
+				</tr>
+			</table>
+			</apex:outputPanel>
+		</apex:pageblock>
+		
+	</apex:form>
+</apex:page>

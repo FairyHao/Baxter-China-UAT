@@ -1,0 +1,95 @@
+<apex:page Controller="BQ_CtrlManageCampaignMembers" showheader="false" id="mypage">  
+<style type="text/css">
+.dateFormat{display: none}
+</style>
+	<apex:form id="myform">
+	<apex:pageMessages />
+		<apex:pageblock id="mypageblock">
+			<div align="left" style="font-family: 微软雅黑; font-size: 17px;">管理市场活动成员</div>
+			<div align="left" style="font-family: 微软雅黑; font-size: 13px;">
+				1.主管审批：主管可以审批用户角色在角色层级中,处于当前主管角色下级的用户所添加的市场活动成员<br/>
+				2.大区审批：大区经理可以审批用户角色在角色层级中,处于其角色下级的用户所添加的市场活动成员,自动将主管拒绝的成员过滤掉。<br/>
+				3.市场部审批：市场部可以审批大区经理审批通过后的所有记录，审批通过后，此成员自动设为已参加。<br/>
+			</div>
+			<hr size= "0" color="#CC9900"  ></hr>
+			<apex:pageblocktable value="{!camlist}" var="cam" id="mytable" cellspacing="0" cellpadding="0" border="0">
+				<apex:column headerValue="主管审批">
+	        		<apex:InputField value="{!cam.V2_SupervisoApprove__c}"  rendered="{!if(IsSupervisor&&!IsRegionalManager,true,false)}"/>
+	        		<apex:OutputField value="{!cam.V2_SupervisoApprove__c}" rendered="{!if(IsSupervisor,false,true)}"/>
+	        		
+	        		<apex:InputField value="{!cam.V2_SupervisoApprove__c}"  rendered="{!if(IsSupervisor&&IsRegionalManager&&cam.SpCurrentUserLevel__c=='Supervisor',true,false)}"/>
+	        		
+	        		<apex:OutputField value="{!cam.V2_SupervisoApprove__c}" rendered="{!if(IsSupervisor&&IsRegionalManager&&cam.SpCurrentUserLevel__c=='Regional',true,false)}"/>
+	        		
+	        	</apex:column>
+	        	<apex:column headerValue="大区经理审批">
+	        		<apex:inputField value="{!cam.V2_AreaManagerApprove__c}" rendered="{!if(IsRegionalManager&&!IsSupervisor,true,false)}"/>
+	        		<apex:OutputField value="{!cam.V2_AreaManagerApprove__c}" rendered="{!if(IsRegionalManager,false,true)}"/>
+	        		
+	        		<apex:inputField value="{!cam.V2_AreaManagerApprove__c}" rendered="{!if(IsRegionalManager&&IsSupervisor&&cam.SpCurrentUserLevel__c=='Regional',true,false)}"/>
+	        		
+	        		<apex:OutputField value="{!cam.V2_AreaManagerApprove__c}" rendered="{!if(IsRegionalManager&&IsSupervisor&&cam.SpCurrentUserLevel__c=='Supervisor',true,false)}"/>
+	        	</apex:column>
+	        	<apex:column headerValue="市场部审批">
+	        		<apex:inputField value="{!cam.V2_MarketingApprove__c}" rendered="{!if(IsMarketing,true,false)}" id="MarketingApp" Onchange="IsParticipated(this)"/>
+	        		<apex:OutputField value="{!cam.V2_MarketingApprove__c}" rendered="{!if(IsMarketing,false,true)}"/>
+	        	</apex:column>
+	        	<apex:column headerValue="姓名" Style="width:80px">
+	        		<apex:outputField value="{!cam.ContactId}" Style="width:80px"/>
+	        	</apex:column>
+	        	<apex:column headerValue="联系人类型" Style="width:80px">
+	        		<apex:outputField value="{!cam.V2_ContactType__c}" Style="width:80px"/>
+	        	</apex:column>
+	        	<apex:column headerValue="医院" Style="width:120px"> 
+	        		<apex:outputField value="{!cam.V2_Hospital__c}" Style="width:120px"/>
+	        	</apex:column> 
+	        	<apex:column headervalue="出发日期"  Style="width:90px">
+<!--					<apex:inputField value="{!cam.V2_DepartDate__c}" id="DepartDate" Style="width:90px" onfocus="ShowDate(this)"/>-->
+					<apex:outputField value="{!cam.V2_DepartDate__c}" id="DepartDate" Style="width:90px" />
+				</apex:column>
+				<apex:column headervalue="出发航班" Style="width:80px">
+					<apex:outputField value="{!cam.V2_DepartFlight__c}" Style="width:90px"/>
+				</apex:column>
+				<apex:column headervalue="到达日期" Style="width:80px">
+<!--					<apex:inputField value="{!cam.V2_ArriveDate__c}" id="ArriveDate" Style="width:90px" onfocus="ShowDate(this)"/>-->
+					<apex:outputField value="{!cam.V2_ArriveDate__c}" id="ArriveDate" Style="width:90px" />
+				</apex:column>
+				<apex:column headervalue="到达航班" Style="width:80px">
+					<apex:outputField value="{!cam.V2_ArriveFlight__c}" Style="width:90px"/>
+				</apex:column>
+				<apex:column headervalue="拒绝原因" Style="width:80px">
+					<apex:inputField value="{!cam.V2_RejectReason__c}" id="RejectReason" Style="width:90px"/>
+				</apex:column>
+	        	<apex:column headerValue="备注">
+	        		<apex:outputField value="{!cam.V2_Comment__c}"  />
+	        	</apex:column>
+	        	<apex:column headerValue="提交人">
+	        		<apex:outputField value="{!cam.UserFullName__c}"/>
+	        	</apex:column>
+			</apex:pageblocktable>
+		</apex:pageblock>
+		<table>
+			<tr>
+				<td>
+					<apex:commandButton value="确定" action="{!SaveCampaignMember}" />
+				</td>
+				<td>
+					<apex:commandButton value="返回市场活动" action="{!Cancel}" />
+				</td>
+			</tr>
+		</table>
+		<script>
+		if({!IsClose})
+		{
+			CloseWindow(); 
+		}
+		function CloseWindow()
+		{
+			var url = "/"+"{!CamId}";
+			//alert("########"+url);
+			opener.document.location= url;
+			window.close(); 
+		}
+	</script>
+	</apex:form>
+</apex:page>

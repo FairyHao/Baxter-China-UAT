@@ -1,0 +1,50 @@
+<apex:page controller="BonusCalculation">
+	<apex:form id="myform">
+        <apex:pageblock >
+        <apex:pageMessages />
+        <apex:actionFunction action="{!CheckSelectUser}" name="CheckSelectUserJs" rerender="myform"/>
+            <div align="center" style="font-family: 微软雅黑; font-size: 16px;">用户奖金计算</div>
+            <div align="left" style="font-family: 微软雅黑; font-size: 13px;">
+                1.选择年份和月份，批量计算本部门用户奖金信息。<br/>
+                2.您也可以选择单个用户来计算其奖金信息。<br/>
+                3.如果批量计算用户奖金数据，由于数据量大请您操作完毕后稍等一段时间再去查看,完成后您将收到邮件通知。 <br/>
+            </div>
+            <hr size= "0" color="#99CC33"  ></hr>
+            
+            <table align="center" cellpadding ="5" border="0">
+                <tr>
+                    <td Style="font-family: 微软雅黑;font-size: 15px;">
+                        年份:
+                        <apex:selectList size="1" value="{!Year}" >
+                            <apex:selectOptions value="{!ListYears}"/>
+                        </apex:selectList>
+                    </td>
+                    <td Style="font-family: 微软雅黑;font-size: 15px;">
+                        月份：
+                        <apex:selectList size="1"  value="{!Month}" >
+                                <apex:selectOptions value="{!ListMonths}"/>
+                        </apex:selectList>
+                    </td>
+                    <td Style="font-family: 微软雅黑;font-size: 15px;">
+                        部门：
+                        <apex:selectList size="1" value="{!Department}"  disabled="{!Isreadonly}">
+                            <apex:selectOptions value="{!ListDepartment}"/>
+                        </apex:selectList>
+                    </td>
+                    <td> 
+                        
+                    </td>
+                    <td Style="font-family: 微软雅黑;font-size: 15px;">
+                        用户：
+                    </td>
+                    <td>
+                        <apex:inputField value="{!UbIf.V2_SalesUser__c}" onchange="CheckSelectUserJs()"/>
+                    </td>
+                    <td>
+                        <apex:commandButton value="开始计算" action="{!BeginComputationBonus}" disabled="{!ButtonDisabled}"/>
+                    </td>
+                </tr>
+            </table>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,356 @@
+<apex:page standardController="BNAHospitalInfo__c"  extensions="BNAAccountInfoController" id="page" >
+    <head>
+    
+    <style >table td{padding: 5px;}
+    </style>
+    </head>
+    <script>
+        function twistDiv(twisty, sectionId) 
+        {
+            var div = document.getElementById(sectionId);
+            if (div.style.display != 'none')  
+            { 
+                div.style.display = 'none';  
+                twisty.className ='showListButton';
+                twisty.alt = twisty.title = '显示部分 - '+twisty.name;
+            } else  
+            {
+                div.style.display = 'block'; 
+                twisty.className = 'hideListButton';
+                twisty.alt = twisty.title = '隐藏部分 - '+twisty.name;
+            } 
+        } 
+    </script>
+        
+    <apex:sectionHeader title="BNA医院信息情况表" subtitle="{!Info.Name}"/>
+        <apex:form id="form">
+        <apex:actionFunction name="rfPagePIVAS" action="{!rfPagePIVAS}"   reRender="page:form" status="myStatus1"/>
+        <apex:actionFunction name="rfPageOUVIA" action="{!rfPageOUVIA}"   reRender="page:form" status="myStatus2"/>
+        <apex:actionFunction name="IsMobile" action="{!IsMobile}"   reRender="page:form"  status="myStatus3"/>
+        <apex:actionFunction name="AllMobile" action="{!AllMobile}"   reRender="page:form" status="myStatus4"/>
+            <apex:pageMessages />
+                <apex:pageBlock id="pb">
+                    <apex:pageBlockButtons >                   
+                    <apex:commandButton value="保存" action="{!MySave}"></apex:commandButton>
+                    <apex:commandButton value="取消" action="{!Cancel}"></apex:commandButton>                    
+                    </apex:pageBlockButtons>
+                        <div>
+                        <div class="pbSubheader brandTertiaryBgr first tertiaryPalette"><img src="/s.gif" alt="隐藏部分 - 客户基本信息"  class="hideListButton" id="img_pt" name="客户基本信息" onclick="twistDiv(this,'AccountInfo');" onkeypress="if (event.keyCode=='13')twistDiv(this,'IntubateInformation');" style="cursor:pointer;" tabindex="0" title="隐藏部分 - 客户基本信息"/><h3>客户基本信息</h3></div>
+                        <div id="AccountInfo">
+                        <table class="detailList" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.OpportunityId__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField value="{!Info.OpportunityId__c}" styleClass="form-control" />
+                              
+                           </td>
+
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label></label>
+                               </th> 
+                           <td>
+                              
+                           </td>
+                        </tr>
+                        <tr>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_SpecialHospital__c.label}</label>
+                           </th> 
+                           <td>
+                                <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_SpecialHospital__c}" />
+                               </div>
+                           </td>
+
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_AccountLevel__c.label}</label>
+                               </th> 
+                           <td>
+                              <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_AccountLevel__c}" />
+                                </div>
+                           </td>
+                        </tr>
+                        <tr>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_EndemicNumber__c.label}</label>
+                           </th> 
+                           <td>
+                                <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_EndemicNumber__c}" />
+                               </div>
+                           </td>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_BedNumber__c.label}</label>
+                           </th> 
+                           <td>
+                                <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_BedNumber__c}"  />
+                               </div>
+                           </td>
+                        </tr>
+                        <tr>
+                            <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_ClinicTotleYear__c.label}</label>
+                           </th> 
+                           <td>
+                                <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_ClinicTotleYear__c}"  />
+                                </div>
+                           </td>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_TransfusionNumber__c.label}</label>
+                           </th> 
+                           <td>
+                               <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_TransfusionNumber__c}"   />
+                                </div>
+                           </td>
+                        </tr>
+                        
+                        <tr>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_PrimaryHospital__c.label}</label>
+                           </th> 
+                           <td>
+                               
+                                <apex:inputField value="{!Info.BNA_PrimaryHospital__c}"/>
+                                
+                           </td>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_NurseWork__c.label}</label>
+                           </th> 
+                           <td>
+                                <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_NurseWork__c}" />
+                                </div>
+                           </td>
+                        </tr>
+                        </table>
+                        </div>
+                        </div>
+                    <div >
+                    <div class="pbSubheader brandTertiaryBgr first tertiaryPalette"><img src="/s.gif" alt="隐藏部分 - 医院PIAVS信息"  class="hideListButton" id="img_pt" name="医院PIAVS信息" onclick="twistDiv(this,'PIVAS');" onkeypress="if (event.keyCode=='13')twistDiv(this,'IntubateInformation');" style="cursor:pointer;" tabindex="0" title="隐藏部分 - 医院PIAVS信息"/><h3>医院PIAVS信息</h3></div>
+                    <div id="PIVAS">
+                    <table class="detailList" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_IsPIVAS__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField value="{!Info.BNA_IsPIVAS__c}" onchange="rfPagePIVAS();" /><apex:actionStatus startText="数据加载中..." id="myStatus1" />
+                                
+                           </td>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label></label>
+                           </th> 
+                           <td>
+                                
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_IsPIVAS__c =='是','','none')} ">
+                           
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_PIVASForm__c.label}</label>
+                           </th> 
+                           <td>
+                                <apex:inputField id="BNA_PIVASForm" value="{!Info.BNA_PIVASForm__c}"/>
+                           </td>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_PIVASCoverage__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField id="BNA_PIVASCoverage" value="{!Info.BNA_PIVASCoverage__c}" />
+                                
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_IsPIVAS__c =='否','','none')} ">
+                            <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_IsPlan__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField id="BNA_IsPlan" value="{!Info.BNA_IsPlan__c}"/>
+                                
+                           </td>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label></label>
+                           </th> 
+                           <td>
+                                
+                           </td>
+                        </tr>
+                    </table>
+                    </div>
+                    </div>
+
+                    <div >
+                    <div class="pbSubheader brandTertiaryBgr first tertiaryPalette"><img src="/s.gif" alt="隐藏部分 - 医院OUVIA信息"  class="hideListButton" id="img_pt" name="医院OUVIA信息" onclick="twistDiv(this,'OUVIA');" onkeypress="if (event.keyCode=='13')twistDiv(this,'IntubateInformation');" style="cursor:pointer;" tabindex="0" title="隐藏部分 - 医院OUVIA信息"/><h3>医院OUVIA信息</h3></div>
+                    <div id="OUVIA">
+                      <table class="detailList" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_ISOUVIA__c.label}</label>
+                           </th> 
+                           <td>
+                                <apex:inputField value="{!Info.BNA_ISOUVIA__c}" onchange="rfPageOUVIA();"/><apex:actionStatus startText="数据加载中..." id="myStatus2" />
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_ISOUVIA__c =='有','','none')} ">
+                           <th  class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_OUVIAFromWhere__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField onchange="" value="{!Info.BNA_OUVIAFromWhere__c}"/>
+                               
+                           </td>
+                           <th  class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_OUVIACoverage__c.label}</label>
+                           </th> 
+                           <td>
+                            <apex:inputField onchange="" value="{!Info.BNA_OUVIACoverage__c}"/>
+                           </td>
+                        </tr>
+
+                        <tr style="display:{!if(Info.BNA_ISOUVIA__c =='无','','none')} ">
+                           <th  class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_OUVAPlan__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField onchange="" value="{!Info.BNA_OUVAPlan__c}"/>
+                               
+                           </td>
+                           <th  class="labelCol vfLabelColTextWrap" scope="row">
+                               <label></label>
+                           </th> 
+                           <td>
+                            
+                           </td>
+                        </tr>
+                        </table>
+                    </div>
+                    </div>
+                    
+                    <div >
+                    <div class="pbSubheader brandTertiaryBgr first tertiaryPalette"><img src="/s.gif" alt="隐藏部分 - 移动护理信息"  class="hideListButton" id="img_pt" name="移动护理信息" onclick="twistDiv(this,'ydxinxi');" onkeypress="if (event.keyCode=='13')twistDiv(this,'IntubateInformation');" style="cursor:pointer;" tabindex="0" title="隐藏部分 - 移动护理信息"/><h3>移动护理信息</h3></div>
+                    <div id="ydxinxi">
+                    <table class="detailList" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_IsMobileSystem__c.label}</label>
+                           </th> 
+                           <td>
+                                <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_IsMobileSystem__c}" onchange="IsMobile();"/><apex:actionStatus startText="数据加载中..." id="myStatus3" />
+                                </div>
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_IsMobileSystem__c =='有','','none')} ">
+                           <th  class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_AllMobileSystem__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField onchange="AllMobile();" value="{!Info.BNA_AllMobileSystem__c}"/><apex:actionStatus startText="数据加载中..." id="myStatus4" />
+                               
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_IsMobileSystem__c =='无','','none')} ">
+
+                          <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_BuildMobileSystemForYear__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField value="{!Info.BNA_BuildMobileSystemForYear__c}" />
+                               
+                           </td>
+                           
+                        </tr>
+                        
+                        
+                        <tr style="display:{!if(Info.BNA_IsMobileSystem__c =='无','none',if(Info.BNA_AllMobileSystem__c == '是','','none'))} ">
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_UpdateTime__c.label}</label>
+                           </th> 
+                           <td>
+                                <apex:inputField value="{!Info.BNA_UpdateTime__c}"/>
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_IsMobileSystem__c =='无','none',if(Info.BNA_AllMobileSystem__c == '是','','none'))} ">
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_Hardware_list__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField value="{!Info.BNA_Hardware_list__c}" />
+                                <span>其它：</span><apex:inputField value="{!Info.BNA_Hardware__c}" id="hardware" />
+                        
+                           </td>
+                        </tr>
+
+                        <tr style="display:{!if(Info.BNA_IsMobileSystem__c =='无','none',if(Info.BNA_AllMobileSystem__c == '是','','none'))} ">
+                           
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_ProductAndPrice__c.label}</label>
+                           </th> 
+                           <td>
+                                <apex:inputField value="{!Info.BNA_ProductAndPrice__c}"  />
+                                <p>填写格式：品牌A:1200元;品牌B:2000元(一行一条)</p>
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_IsMobileSystem__c =='无','none',if(Info.BNA_AllMobileSystem__c == '否','','none'))} ">
+                            <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_IsOfficeMobileSystem__c.label}</label>
+                           </th> 
+                           <td>
+                                
+                                <apex:inputField value="{!Info.BNA_IsOfficeMobileSystem__c}"  />
+                               
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_IsMobileSystem__c =='无','none',if(Info.BNA_AllMobileSystem__c == '否','','none'))} ">
+                            <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_Evaluate__c.label}</label>
+                           </th> 
+                           <td>
+                                <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_Evaluate__c}"  />
+                                </div>
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_IsMobileSystem__c =='有',if(Info.BNA_AllMobileSystem__c !=null,'','none'),'none')} ">
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_FromDep__c.label}</label>
+                           </th> 
+                           <td>
+                                <div class="requiredInput"><div class="requiredBlock"></div>
+                                <apex:inputField value="{!Info.BNA_FromDep__c}"  />
+                                </div>
+                           </td>
+                        </tr>
+                        <tr style="display:{!if(Info.BNA_IsMobileSystem__c =='有',if(Info.BNA_AllMobileSystem__c !=null,'','none'),'none')} ">
+                           
+                           <th class="labelCol vfLabelColTextWrap" scope="row">
+                               <label>{!$ObjectType.BNAHospitalInfo__c.fields.BNA_Budget__c.label}</label>
+                           </th> 
+                           <td>
+                               
+                                <apex:inputField value="{!Info.BNA_Budget__c}"  />
+                                
+                           </td>
+                        </tr>
+                        </table>
+                    </div>
+                    </div>
+
+                </apex:pageBlock>
+        </apex:form>
+</apex:page>

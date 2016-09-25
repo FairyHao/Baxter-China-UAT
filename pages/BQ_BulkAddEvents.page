@@ -1,0 +1,207 @@
+<apex:page Controller="BQ_CtrlBulkAddEventsLogic" id="mypage" > 
+<apex:includeScript value="{!URLFOR($Resource.Rknews__jQueryUI ,'js/jquery-1.5.1.min.js')}" />
+<script type="text/javascript">
+j$=jQuery.noConflict();
+</script>
+    <script>
+      
+        function checkAll(cb)
+        {
+            var inputElem = document.getElementsByTagName("input");
+            for(var i=0; i<inputElem.length; i++)
+            {
+                if(inputElem[i].id.indexOf("selectOpt")!=-1)
+                inputElem[i].checked = cb.checked;
+            }
+        } 
+        function selectHourInput(choose)
+        {
+                var num = choose.id.split("starthour");
+                //startminute 
+                var startminute = document.getElementById(num[0]+"startminute");
+                //endhour
+                var endhour = document.getElementById(num[0]+"endhour");
+                //endminute
+                var endminute = document.getElementById(num[0]+"endminute");
+                if(parseInt(startminute.value) ==45)
+                {
+                    endhour.value = String(parseInt(choose.value)+1);
+                    endminute.value=String("0")
+                }
+                else if(parseInt(startminute.value) ==50)
+                {
+                    endhour.value = String(parseInt(choose.value)+1);
+                    endminute.value=String("5");
+                }
+                else if(parseInt(startminute.value) ==55)
+                {
+                    endhour.value = String(parseInt(choose.value)+1);
+                    endminute.value=String("10");
+                }
+                else
+                {
+                    endhour.value = String(parseInt(choose.value));
+                    endminute.value=String(parseInt(startminute.value)+15);
+                }
+        }
+        function selectMinuteInput(choose)
+        {
+                
+                //di前缀
+                var num = choose.id.split("startminute");
+                //开始小时
+                //alert('E################前缀'+num);
+                var starthour = document.getElementById(num[0]+"starthour");
+                //alert('开始时间'+ starthour.value);
+                //结束分钟
+                var endminute = document.getElementById(num[0]+"endminute");
+                //alert('结束时间'+endminute.value);
+                //结束小时
+                var endhour = document.getElementById(num[0]+"endhour");
+                //alert('结束小时'+ endhour.value);
+                if(parseInt(choose.value) ==45 )
+                {
+                    endhour.value = String((parseInt(starthour.value)+1));
+                    endminute.value = String("0");
+                }
+                else if(parseInt(choose.value) ==50)
+                {
+                    endhour.value = String((parseInt(starthour.value)+1));
+                    endminute.value = String("5");
+                }
+                else if(parseInt(choose.value) ==55)
+                {
+                    endhour.value = String((parseInt(starthour.value)+1));
+                    endminute.value = String("10");
+                }
+                else
+                {
+                    endhour.value = String(parseInt(starthour.value));
+                    endminute.value = String((parseInt(choose.value)+15));
+                }
+            
+        }
+    </script>
+    
+    <body >
+    <apex:form id="ert" >
+    <apex:pageBlock id="myblockid">
+        <apex:pageMessages />
+        <div Style="font-family: 微软雅黑;font-size: 14px;">
+        请填写日期<apex:inputText id="inputdateid" value="{!selectdate}" onfocus="RemoveC()" onmousedown="DatePicker.pickDate(true, 'mypage:ert:myblockid:inputdateid', false);" onchange="EventSearchJs()" style="width:80px"/>
+        <apex:commandButton value="保存"  action="{!SaveEvent}"  />
+        <apex:actionFunction action="{!EventSearch}" name="EventSearchJs" rerender="ert" status="myStatus"/>
+        <apex:actionStatus startText="数据加载中..." id="myStatus" />
+        <label id="currentSelectedInfo"></label>
+        </div>
+        <apex:pageBlockTable value="{!ListEventSobj}" var="es"  id="mytable" Style="width:900px">
+            <apex:column Style="width:25px">
+                <apex:facet name="header" >
+                     <input type="checkbox" id="chkall" onclick="checkAll(this)" />
+                </apex:facet>
+                <apex:inputCheckbox value="{!es.IsDelete}" id="selectOpt" disabled="{!es.followeventFlag}"/> 
+            </apex:column>
+            <apex:column headerValue="医生" Style="width:80px">
+                <apex:inputField value="{!es.ev.WhoId}" id="picklistids" Style="width:80px" rendered="{!if(es.followeventFlag,false,true)}"/>
+                <apex:outputField value="{!es.ev.WhoId}"   Style="width:80px" rendered="{!if(es.followeventFlag,true,false)}"/>
+            </apex:column>
+            <apex:column width="2%" headerValue="完成" Style="width:30px">
+                <apex:inputCheckbox value="{!es.ev.Done__c}" />
+            </apex:column>
+            <apex:column headerValue="小时" style="width:70px">
+                <apex:selectList size="1" id="starthour" value="{!es.StartHours}" onchange="selectHourInput(this)" >
+                    <apex:selectOptions value="{!HourList}"/>
+                </apex:selectList><br/>
+                <apex:selectList size="1" id="endhour" value="{!es.EndHours}" style="{!if(es.ErrorMag == null,'','background-color:#FF0000;')}">
+                        <apex:selectOptions value="{!HourList}"/>
+                </apex:selectList>
+            </apex:column>
+            <apex:column headerValue="分钟" style="width:35px">
+                <apex:selectList size="1" id="startminute" value="{!es.StartMinutes}" onchange="selectMinuteInput(this)">
+                    <apex:selectOptions value="{!MinuteList}"/>
+                </apex:selectList><br/>
+                <apex:selectList size="1" id="endminute" value="{!es.EndMinutes}" style="{!if(es.ErrorMag == null,'','background-color:#FF0000;')}">
+                    <apex:selectOptions value="{!MinuteList}"/>
+                </apex:selectList>
+            </apex:column>
+            <apex:column headerValue="计划" Style="width:140px">
+                <apex:inputField value="{!es.ev.GAPlan__c}" Style="width:140px"/>
+            </apex:column>
+            <apex:column headerValue="结果分析" Style="width:140px">
+                <apex:inputField value="{!es.ev.GAExecuteResult__c}" Style="width:140px"/>
+            </apex:column>
+            
+            <apex:column headerValue="所需支持" Style="width:140px">
+                <apex:inputField value="{!es.ev.V2_NeedSupport__c}" Style="width:140px"/>  
+            </apex:column>
+            <apex:column headerValue="市场细分类型(BQ)" >
+                <apex:inputField value="{!es.ev.BQ_CampaignCallType__c}" id="CampaignCallType" style="width:130px"/>
+            </apex:column> 
+            <apex:column headerValue="E-detailing使用" >
+                <apex:inputField value="{!es.ev.BQ_E_detailing__c}" id="BQ_E_detailing"/>
+            </apex:column> 
+<!--            *************************2012-2-15新加***********************-->
+            
+            
+<!--            <apex:column headerValue="{!$ObjectType.Event.fields.V2_Other__c.label}" rendered="{!or(IsMdBios, isIVT)}">-->
+<!--                <apex:inputField value="{!es.ev.V2_Other__c}" style="width:120px"/>-->
+<!--            </apex:column>-->
+            <apex:column Style="width:40px">
+                <apex:facet name="header" >
+                    <apex:image url="{!$Resource.V2_help}" title="只有系统中已经存在的记录才会显示’拜访‘链接，如果是新建记录则要保存后才会显示’拜访‘链接" >协访&nbsp;</apex:image>
+                </apex:facet>
+                <apex:image url="{!$Resource.Muti_Event}"  onclick="window.open('/{!es.ev.Id}/e')" style="{!if(es.ev.Id == null,"display:none","display:block")}"/>
+            </apex:column> 
+        </apex:pageBlockTable>
+    
+        <table align="left">
+            <tr>
+                <td>
+                    <apex:commandButton value="+" action="{!AddEvent}"  reRender="ert"/> 
+                </td>
+                <td>
+                    <apex:commandButton value="删除" action="{!DeleteEvent}" reRender="ert"/>
+                </td>
+            </tr>
+        </table>
+    </apex:pageBlock>
+    <script>
+            var inputElem= document.getElementsByTagName("select");
+                for(var i=0; i<inputElem.length; i++)
+            {
+                if(inputElem[i].id.indexOf("picklistids_mlktp")!=-1)
+                {
+                    inputElem[i].style.display="none";
+                }
+                //市场细分类型style
+                if(inputElem[i].id.indexOf("pur")!=-1)
+                {
+                    //alert('##################################################################inputElem[i].id  '+inputElem[i].Style);
+                    inputElem[i].style.width="120px";
+                    
+                    //inputElem[i].style.display="none";
+                    //alert('#######################################################style.width     '+inputElem[i].style.width);
+                    //break;
+                }
+            }
+            var inputElem= document.getElementsByTagName("input");
+                for(var i=0; i<inputElem.length; i++)
+            {
+                if(inputElem[i].id.indexOf("picklistids")!=-1)
+                {
+                     inputElem[i].style.width="80px";
+                }
+            }
+             
+            
+    </script>
+    </apex:form>
+    <script>
+        if({!SaveFlag})
+            {
+                alert('数据已经保存成功，可以添加协访。');
+            }
+    </script>
+    </body>
+    
+</apex:page>

@@ -1,0 +1,271 @@
+<apex:page standardController="Opportunity" extensions="BQ_CtrlOpportunityStrategyComment" id="nf">
+<apex:includeScript value="/soap/ajax/25.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/25.0/apex.js"/>
+<style>
+.myDiv{border-style:solid;border-width:1pt; border-color:#FFA303;}
+.myTr{background-color: #918415;}
+</style>
+<script type="text/javascript">
+var haveNew = false;
+function changeHidden(hid){
+    //alert(hid);
+    document.getElementById("nf:f:pb:hiddenProdyctType").value=hid;
+    if(hid == 'new' && haveNew == true){
+        haveNew = false;
+    }
+}
+function checkPower(e){
+    var userid='{!UserId}';
+    var oppid ='{!OppId}';
+    var month=document.getElementById("nf:f:pb:sm").value;
+    var year=document.getElementById("nf:f:pb:sy").value;
+    //alert(sm+'~'+months+'~'+userid+' ~ '+oppid+' ~ '+month+'~'+sl);
+    var strquery="Select Id From OppEvaluation__c Where Commentator__c='"+userid+"' And Opportunity__c='"+oppid+"' And Month__c ='"+month+"' And Year__c = '"+year+"'";
+    var strQuery2="Select Id,OwnerId,RecordType.DeveloperName,StageName From Opportunity Where Id='"+oppid+"'";
+    
+    sforce.connection.sessionId = '{!$Api.Session_ID}';
+    
+    try{
+        var result2 = sforce.connection.query(strQuery2);
+        
+        var records2 = result2.getArray("records");
+        
+        if(records2 != null && records2.length > 0){
+            if(records2[0].OwnerId == userid){
+                alert('您不能评价自己所负责的业务机会。');
+                return false;
+            }
+            /*
+            //判断是否为进行中的业务机会
+            //SP业务机会-
+            //① ACC&ACC-Supervisor记录类型
+            //② 进行中的业务机会阶段显示为“发现机会”
+            //PD业务机会-
+            //① 业务机会的记录类型为Renal
+            //② 进行中的阶段为：发现/验证业务机会，建立沟通渠道，需求分析，提交合作方案/谈判，跟进合作方案。非进行中的阶段为：签约/缔结(成功)，客户合作失败，休眠
+            //HD/CRRT业务机会-
+            //① 业务机会的记录类型为Renal
+            //② 进行中的阶段为：发现/验证业务机会，建立沟通渠道，需求分析，提交合作方案/谈判，跟进合作方案。非进行中的阶段为：签约/缔结(成功)，客户合作失败，休眠
+            //IVT业务机会-
+            //① 业务机会的记录类型为IVT & IVT approval
+            //② 非进行中的阶段：缔结(成功)，关闭 (失败，放弃)   其余为进行中
+            //BQ业务机会
+            //① 业务机会的记录类型为BQ
+            //② 非进行中的阶段：(S0)尚未开始，(S5)正式采购,客户合作失败   其余为进行中
+            */
+            if((records2[0].RecordType.DeveloperName == 'ACC' || records2[0].RecordType.DeveloperName == 'ACC_Supervisor') && records2[0].StageName != '发现机会'){
+                alert('该业务机会属于非进行阶段，不能添加评价.');
+                return false;
+            }else if(records2[0].RecordType.DeveloperName == 'RENAL' && (records2[0].StageName=='签约/缔结(成功)' || records2[0].StageName=='客户合作失败' || records2[0].StageName=='休眠')){
+                alert('该业务机会属于非进行阶段，不能添加评价.');
+                return false;
+            }else if((records2[0].RecordType.DeveloperName == 'IVT' || records2[0].RecordType.DeveloperName == 'IVT_Approval') && (records2[0].StageName=='缔结(成功)' || records2[0].StageName=='关闭 (失败，放弃)')){
+                alert('该业务机会属于非进行阶段，不能添加评价.');
+                return false;
+            }
+            else if(records2[0].RecordType.DeveloperName == 'BQ' && (records2[0].StageName=='(S0)尚未开始' || records2[0].StageName=='(S5)正式采购' || records2[0].StageName=='客户合作失败'))
+            {
+            	alert('该业务机会属于非进行阶段，不能添加评价.((S0)尚未开始、(S5)正式采购、客户合作失败，为非进行阶段)');
+                return false;
+            }
+            
+        }
+        //else{
+        //    alert('该业务机会不是IVT业务机会或阶段属于非进行中，不能添加评价。');
+        //    return false;
+        //}
+    
+        var result = sforce.connection.query(strquery);
+        
+        var records = result.getArray("records");
+        
+        if(records != null && records.length > 0){
+            alert('您已填写过该月份评价，请勿重复添加。');
+            return false;
+            //if(document.all){
+            
+               //window.event.returnValue = false;
+                  
+            //}else{
+            //alert("~"+e);
+               //e.preventDefault();
+               //return false;  
+            //}
+            
+        }
+        
+    }catch(e){
+    //alert(e);
+    }
+    
+    if(haveNew == false){
+        haveNew = true;
+    }else if(haveNew == true){
+        alert('您已经添加了一个新的评价，请先保存。');
+        return false;
+    }
+    
+    return true;
+}
+function checkCanSave(bt){
+    var ids = bt.getAttribute("id");
+    ids=ids.substr(0,21);
+    
+    //var editG=document.getElementById("nf:f:pb:0:iTable:"+a+":newG").value;
+    var editG=document.getElementById(ids+"newG").value;
+    if(editG==null||editG==''||editG=='--无--'){
+        alert('请填写分数。');
+        return false;
+        
+    }
+    return true;
+}
+function checkCanEditSave(bt){
+//alert('~~'+bt.getAttribute("id"));
+    var ids = bt.getAttribute("id");
+    ids=ids.substr(0,21);
+    //nf:f:pb:rp:0:s:pbt:0:j_id12
+    //alert(ids);
+    //a=a-1;
+    var editG=document.getElementById(ids+"editG").value;
+    
+    if(editG==null||editG==''||editG=='--无--'){ 
+        alert('请填写分数。');
+        /*
+        if(document.all){
+            window.event.returnValue = false;
+        }else if(e && e.preventDefault){
+            e.preventDefault();
+        }
+        */
+        return false;
+    }
+    return true;
+}
+function popImg(){
+	var toogle = document.getElementById("oppHelpDiv"); 
+	if(toogle.style.visibility == "" || toogle.style.visibility == "hidden"){ 
+	toogle.style.visibility = "visible"; 
+	}else{ 
+	toogle.style.visibility = "hidden"; 
+	} 
+}
+function pop(){ 
+var toogle = document.getElementById("helpDiv"); 
+if(toogle.style.visibility == "" || toogle.style.visibility == "hidden"){ 
+toogle.style.visibility = "visible"; 
+}else{ 
+toogle.style.visibility = "hidden"; 
+} 
+}
+</script>
+<apex:form id="f">
+<apex:pageBlock id="pb">
+<apex:inputHidden id="hiddenProdyctType" value="{!strEditId}"/>
+<apex:inputHidden id="hiddenmonth" value="{!strNewMonth}"/>
+<apex:commandButton action="{!addComment}" value="添加" reRender="pb" status="counterStatus" rendered="{!ismanager}" onclick="if(!checkPower(event))return"/>
+<apex:actionStatus startText="运行中..."
+            stopText="" id="counterStatus"/>
+&nbsp;
+<apex:outputLabel value="年度：" for="year" style="font-weight:bold;"/>
+<apex:selectList value="{!strNewYear}" size="1" id="sy">
+    <apex:selectOptions value="{!NewYears}"/>
+</apex:selectList>
+&nbsp;
+<apex:outputLabel value="月份：" for="month" style="font-weight:bold;"/>
+<apex:selectList value="{!strNewMonth}" size="1" id="sm">
+    <apex:selectOptions value="{!NewMonths}"/>
+</apex:selectList>
+
+
+<apex:repeat value="{!list_OppEvaYear}" var="OppEvaWr" id="rp">
+<apex:pageBlockSection title="{!OppEvaWr.strYear}" columns="1" id="s">
+
+
+
+<apex:pageBlockTable value="{!OppEvaWr.listOppEvaw}" var="oe" id="pbt">
+
+<apex:column headerValue="策略评分" width="15%">
+<apex:commandButton action="{!saveComment}" value="保存" rendered="{!oe.blnNew}" onclick="changeHidden('new');if(!checkCanSave(this))return;this.disabled=true;" status="counterStatus" reRender="pbt"/>
+<apex:commandButton action="{!saveComment}" value="保存" rendered="{!oe.blnEdit}" onclick="changeHidden('{!oe.OppEva.Id}');if(!checkCanEditSave(this))return;this.disabled=true;" status="counterStatus" reRender="pbt"/>
+<apex:commandButton action="{!editComment}" value="编辑" rendered="{!oe.blnCanEdit}" onclick="changeHidden('{!oe.OppEva.Id}');" status="counterStatus" reRender="pbt"/>
+<apex:commandButton action="{!SendEmail}" value="发送评分评语" rendered="{!oe.blnCanEdit}" onclick="changeHidden('{!oe.OppEva.Id}');alert('发送请求已提交。')" status="counterStatus" />
+<apex:commandButton action="{!cannelEdit}" value="取消" rendered="{!oe.blnEdit}" onclick="changeHidden('{!oe.OppEva.Id}');" status="counterStatus" reRender="pbt"/>
+<apex:actionStatus startText="运行中..."
+            stopText="" id="butStatus"/> 
+</apex:column>
+
+<apex:column headerValue="{!$ObjectType.OppEvaluation__c.fields.Month__c.label}" width="15%">
+<apex:outputField value="{!oe.OppEva.Month__c}"  rendered="{!oe.blnOld}"/>
+<!-- 
+<apex:selectList value="{!oe.strMonth}" size="1" rendered="{!oe.blnNew}">
+    <apex:selectOptions value="{!NewMonths}"/>
+</apex:selectList>
+ -->
+ <apex:outputText value="{!oe.strMonth}"  rendered="{!oe.blnNew}"/>
+<apex:outputField value="{!oe.OppEva.Month__c}"  rendered="{!oe.blnEdit}"/> 
+</apex:column>
+
+<apex:column width="15%">
+<apex:facet name="header" >
+<!--    <apex:image url="{!$Resource.V2_help}" onmouseover="pop();" onmouseout="pop();">-->
+    {!$ObjectType.OppEvaluation__c.fields.Score__c.label}
+<!--    </apex:image>-->
+</apex:facet>
+<apex:outputField value="{!oe.OppEva.Score__c}"  rendered="{!oe.blnOld}" />
+<apex:inputField value="{!oe.OppEva.Score__c}" rendered="{!oe.blnNew}" id="newG"/>
+<apex:inputField value="{!oe.OppEva.Score__c}" rendered="{!oe.blnEdit}" id="editG"/>
+</apex:column>
+
+<apex:column width="40%">
+<apex:facet name="header" >
+<!--    <apex:image url="{!$Resource.V2_help}"  onmouseover="popImg();" onmouseout="popImg();">-->
+    {!$ObjectType.OppEvaluation__c.fields.Comments__c.label}&nbsp; 
+<!--    </apex:image>-->
+</apex:facet>
+<apex:outputField value="{!oe.OppEva.Comments__c}"  rendered="{!oe.blnOld}" />
+<apex:inputTextArea value="{!oe.OppEva.Comments__c}" rendered="{!oe.blnNew}" rows="2" style="width: 90%;"/>
+<apex:inputTextArea value="{!oe.OppEva.Comments__c}" rendered="{!oe.blnEdit}" rows="2" style="width: 90%;"/>
+</apex:column>
+
+<apex:column headerValue="{!$ObjectType.OppEvaluation__c.fields.Commentator__c.label}" width="15%">
+<apex:outputField value="{!oe.OppEva.Commentator__c}" />
+</apex:column>
+
+</apex:pageBlockTable>
+</apex:pageBlockSection>
+</apex:repeat>
+
+
+</apex:pageBlock>
+<div id="oppHelpDiv" style ="position: absolute; visibility: hidden;z-index:100;right: 150px;top: 0px;">
+	<apex:image id="theImage" value="{!$Resource.oppStarateHelp}" width="300" height="350"/>
+</div>
+<div id="helpDiv" style ="position: absolute;font-family: 微软雅黑; background-color:#FEFDB9; visibility: hidden;z-index:100;top: 0px;right: 0px;" class="myDiv">
+    <table cellspacing="0" cellpadding="0" border="1" bordercolor="#E0E3E5" id="table1">
+    <tr class="myTr">
+    <th width="20%" align="center" style="text-align: center;"><span style="color: white;" >1分</span></th>
+    <th width="20%" align="center" style="text-align: center;"><span style="color: white;">2分</span></th>
+    <th width="20%" align="center" style="text-align: center;"><span style="color: white;">3分</span></th>
+    <th width="20%" align="center" style="text-align: center;"><span style="color: white;">4分</span></th>
+    <th width="20%" align="center" style="text-align: center;"><span style="color: white;">5分</span></th>
+    </tr>
+    <tr>
+    <td style="text-align: center; font-weight:normal">未涉及</td>
+    <td style="text-align: center; font-weight:normal">有待改进</td>
+    <td style="text-align: center; font-weight:normal">有效</td>
+    <td style="text-align: center; font-weight:normal">高效</td>
+    <td style="text-align: center; font-weight:normal">专家</td>
+    </tr>
+    </table>
+    <br/>
+    <table cellspacing="0" cellpadding="0" border="1" bordercolor="#E0E3E5" >
+    <tr class="myTr"><th colspan="2"><span style="color: white;">业务机会策略评分内容与标准</span></th></tr>
+    <tr><td>业务机会阶段(20%)</td><td style=" font-weight:normal;">1.明确订立并更新每个业务机会的阶段<br/>2.根据业务机会所处的阶段，制定相关工作重点以推进业务机会的进程</td></tr>
+    <tr><td>联系人角色(30%)</td><td style=" font-weight:normal">1.设立相关目标联系人的角色<br/>2.了解医院或科室中谁影响着业务机会的进展（例如谁是主导者，学术带头的作用等），谁和什么影响着业务机会的成功<br/>3.利用相关人员所处角色来调节或制定相应策略来影响最终的目标客户<br/>4.根据公司的现有资源找到最符合满足目前目标客户的需求加以执行</td></tr>
+    <tr><td>关键策略制定(20%)</td><td style=" font-weight:normal">1.了解医院的内部因素和外部因素，完整收集竞品信息，了解科室未来发展方向<br/>2.根据swot分析并整合公司现有资源制定有助于目标达成的策略</td></tr>
+    <tr><td>策略的执行(30%)</td><td style=" font-weight:normal">1.进行与业务机会相关的拜访、相关事件<br/>2.执行所选目标或策略结合公司资源而制定相应的行动计划<br/>3.回顾执行的计划与制定策略的相关性并加以调整</td></tr>
+    </table>
+    </div>
+</apex:form>
+</apex:page>

@@ -1,0 +1,33 @@
+<apex:page Controller="BQ_CtrRepeatCreateEvent" showheader="false">
+	<script>
+		function CloseWindow()
+		{
+			var url = "/"+"{!CampaignIds}"; 
+			//alert("########"+url);
+			opener.document.location= url;
+			window.close(); 
+		}
+	</script>
+	<apex:form >
+		<apex:pageblock >
+		<div align="center" style="font-family: 微软雅黑; font-size: 16px;">创建市场活动成员追踪拜访</div><br/>
+		<hr size= "0" color="#CC9900" ></hr> 
+		<div align="left" style="font-family: 微软雅黑; font-size: 13px;">
+			1.只有市场部审批通过并且已经参加了此次市场活动的成员才可以创建追踪拜访。<br/>
+			2.如果您确认要创建追踪拜访请点击'确认'按钮，退出请点'关闭'按钮。
+		</div>
+		<apex:pageMessages />
+		<br/>
+			<table align="center" border="0">
+				<tr>
+					<td>
+						<apex:commandButton value="确定" action="{!CreateEvent}"  /> 
+					</td>
+					<td>
+						<apex:commandButton value="关闭" Onclick="CloseWindow()"  /> 
+					</td>
+				</tr>
+			</table>
+		</apex:pageblock>
+	</apex:form>
+</apex:page>

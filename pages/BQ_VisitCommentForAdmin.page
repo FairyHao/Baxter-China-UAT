@@ -1,0 +1,263 @@
+<apex:page Standardcontroller="Event" extensions="BQ_CtrlVisitCommentForAdmin" id="nf" showHeader="false">
+<apex:includeScript value="/soap/ajax/25.0/connection.js"/>
+<apex:includeScript value="/soap/ajax/25.0/apex.js"/>
+<style>
+.myDiv{border-style:solid;border-width:1pt; border-color:#FFA303;}
+.myTr{background-color: #918415;}
+</style>
+<script>
+function changeHidden(hid){
+    //alert(hid);
+    document.getElementById("nf:f:pb:hiddenEditId").value=hid;
+}
+function checkPower(){
+//alert("here");
+    var CanNew = '{!CanNew}';
+    //alert(CanNew);
+    if(CanNew == 'false' || CanNew == false){
+        alert('您只能点评当月和上月的拜访，上月拜访需在7日之前点评。');
+        return false;
+    }
+    var userid = '{!UserId}';
+    var eventid = '{!eventId}';
+    //alert(userid+'~~'+eventid);
+    var queryEvent = "Select Id,OwnerId From Event Where Id = '"+eventid+"' And OwnerId= '"+userid+"'";
+    sforce.connection.sessionId = '{!$Api.Session_ID}';
+    var result = sforce.connection.query(queryEvent);
+    //alert(result);
+    var records = result.getArray("records");
+    //alert(records);
+    
+    if(records != null && records.length > 0){
+        alert('您不能为自己的拜访添加点评。');
+        return false;
+    }else{
+        return true;
+    }
+}
+function checkCanSave(a,e){
+    a=a-1;
+    var s = document.getElementById("nf:f:pb:iTable:"+a+":s").value;
+    var sr = document.getElementById("nf:f:pb:iTable:"+a+":sr").value;
+    var newG = document.getElementById("nf:f:pb:iTable:"+a+":newG").value;
+    //var newT = document.getElementById("nf:f:pb:iTable:"+a+":newT").value;
+    //alert(s.value);
+    var userid = '{!UserId}';
+    var eventid = '{!eventId}';
+    //alert(s+' '+userid+' '+eventid);
+    if(s==null||s==''||s=='--无--'){
+        alert('请选择被点评人。');
+        if(document.all){
+            window.event.returnValue = false;
+        }else if(e && e.preventDefault){
+            e.preventDefault();
+        }
+        return ;
+    }
+    if(sr==null||sr==''||sr=='--无--'){
+        alert('请选择点评人。');
+        if(document.all){
+            window.event.returnValue = false;
+        }else if(e && e.preventDefault){
+            e.preventDefault();
+        }
+        return ;
+    }
+    if(newG==null||newG==''||newG=='--无--'){
+        alert('请填写分数。');
+        if(document.all){
+            window.event.returnValue = false;
+        }else if(e && e.preventDefault){
+            e.preventDefault();
+        }
+        return ;
+    }
+    try{
+    sforce.connection.sessionId = '{!$Api.Session_ID}';
+    var queryVisit = "Select Id From AssVisitComments__c Where BeReviewed__c = '"+s+"' And EventId__c = '"+eventid+"' And ReUser__c= '"+sr+"'";
+    var result = sforce.connection.query(queryVisit);
+    //alert(result);
+    var records = result.getArray("records");
+    //alert(records);
+    if(records != null && records.length > 0){
+        alert('该点评人已经点评过该被点评人，请勿重复点评。');
+        parent.location.href=parent.location.href;
+        if(document.all){
+        window.event.returnValue = false;
+        }else if(e && e.preventDefault){
+        e.preventDefault();
+        }
+        return ;
+        //return false;
+    }
+    //alert("评价将被保存，保存成功之后页面将跳转到被点评人日历。");
+    }catch(error){
+        alert(error);
+    }
+}
+function checkCanEditSave(a,e){
+
+    a=a-1;
+    var editG=document.getElementById("nf:f:pb:iTable:"+a+":editG").value;
+    //var ss = document.getElementById("nf:f:pb:iTable:"+a+":ss").value;
+    
+    if(editG==null||editG==''||editG=='--无--'){
+        alert('请填写分数。');
+        if(document.all){
+            window.event.returnValue = false;
+        }else if(e && e.preventDefault){
+            e.preventDefault();
+        }
+        return ;
+    }
+    /*
+    if(ss==null||ss==''||ss=='--无--'){
+        alert('请选择点评人。');
+        if(document.all){
+            window.event.returnValue = false;
+        }else if(e && e.preventDefault){
+            e.preventDefault();
+        }
+        return ;
+    }
+    */
+    //alert("评价将被保存，保存成功之后页面将跳转到被点评人日历。");
+}
+function relo(){
+alert("!");
+    //window.reload();
+    window.href="/apex/Visitcomment";
+    
+}
+function popImg(){
+    var toogle = document.getElementById("visitHelpDiv"); 
+    if(toogle.style.visibility == "" || toogle.style.visibility == "hidden"){ 
+    toogle.style.visibility = "visible"; 
+    }else{ 
+    toogle.style.visibility = "hidden"; 
+    } 
+}
+function pop(){ 
+var toogle = document.getElementById("helpDiv"); 
+if(toogle.style.visibility == "" || toogle.style.visibility == "hidden"){ 
+toogle.style.visibility = "visible"; 
+}else{ 
+toogle.style.visibility = "hidden"; 
+} 
+}
+function confirmMsg(){
+    if (window.confirm("确认要删除吗?")) {
+        
+    } else {
+        if(document.all){
+            window.event.returnValue = false;
+        }else if(e && e.preventDefault){
+            e.preventDefault();
+        }
+    }
+}
+</script>
+
+<apex:form id="f">
+<apex:pageBlock id="pb">
+<apex:inputHidden id="hiddenEditId" value="{!strEditId}"/>
+<apex:commandButton action="{!addComment}" value="添加点评" reRender="iTable" status="counterStatus" rendered="{!isAdmin}"/>
+<apex:pageMessage summary="您不是管理员,不能在此页面添加点评." severity="warning" strength="3" rendered="{!if(isAdmin,false,true)}"/>
+
+<apex:actionStatus startText="运行中..."
+            stopText="" id="counterStatus"/>
+
+ 
+<apex:pageBlockTable value="{!list_AssVisitCommWrapper}" var="avc" id="iTable" width="100%">
+
+<apex:column headerValue="" width="10%">
+<apex:commandButton action="{!CommentSave}" value="保存" rendered="{!avc.IsNew}" onclick="changeHidden(this.parentNode.parentNode.rowIndex);checkCanSave(this.parentNode.parentNode.rowIndex , event);" status="counterStatus"/>
+<apex:commandButton action="{!CommentSave}" value="保存" rendered="{!avc.IsEdit}" onclick="changeHidden(this.parentNode.parentNode.rowIndex);checkCanEditSave(this.parentNode.parentNode.rowIndex , event);" status="counterStatus" />
+<apex:commandButton action="{!editComment}" value="编辑" rendered="{!avc.CanEdit}" onclick="changeHidden(this.parentNode.parentNode.rowIndex);" status="counterStatus"/>
+<apex:commandButton action="{!cannelEdit}" value="取消" rendered="{!avc.IsEdit}" status="counterStatus"/>
+<apex:commandButton action="{!cannelEdit}" value="取消" rendered="{!avc.IsNew}" status="counterStatus"/>
+<apex:commandButton action="{!delectComment}" value="删除" rendered="{!avc.CanEdit}" status="counterStatus" onclick="confirmMsg();changeHidden(this.parentNode.parentNode.rowIndex);"/>
+</apex:column>
+
+<apex:column headerValue="{!$ObjectType.AssVisitComments__c.fields.BeReviewed__c.label}">
+<apex:outputField value="{!avc.AssVisitComment.BeReviewed__c}" rendered="{!avc.IsNoEdit}"/>
+<apex:outputField value="{!avc.AssVisitComment.BeReviewed__c}" rendered="{!avc.IsEdit}"/>
+<apex:selectList value="{!avc.strBeRe}" size="1" rendered="{!avc.IsNew}" id="s">
+    <apex:selectOptions value="{!EventAttendees}"/>
+</apex:selectList> 
+</apex:column>
+
+<apex:column headerValue="{!$ObjectType.AssVisitComments__c.fields.ReUser__c.label}">
+<apex:outputField value="{!avc.AssVisitComment.ReUser__c}" rendered="{!avc.IsNoEdit}"/>
+<apex:outputField value="{!avc.AssVisitComment.ReUser__c}" rendered="{!avc.IsEdit}"/>
+<apex:selectList value="{!avc.strReUser}" size="1" rendered="{!avc.IsNew}" id="sr">
+    <apex:selectOptions value="{!ReUserName}"/>
+</apex:selectList> 
+</apex:column>
+
+<apex:column >
+<apex:facet name="header" >
+    
+    <apex:image url="{!$Resource.V2_help}"  onmouseover="pop();" onmouseout="pop();">
+    {!$ObjectType.AssVisitComments__c.fields.Grade__c.label}&nbsp;
+    </apex:image>
+    
+</apex:facet>
+
+<apex:inputField value="{!avc.AssVisitComment.Grade__c}" rendered="{!avc.IsNew}" id="newG"/>  
+<apex:inputField value="{!avc.AssVisitComment.Grade__c}" rendered="{!avc.IsEdit}" id="editG"/> 
+<apex:outputField value="{!avc.AssVisitComment.Grade__c}" rendered="{!avc.IsNoEdit}"/>
+</apex:column>
+
+<apex:column >
+<apex:facet name="header" >
+    <apex:image url="{!$Resource.V2_help}"  onmouseover="popImg();" onmouseout="popImg();">
+    {!$ObjectType.AssVisitComments__c.fields.Comment__c.label}&nbsp;
+    </apex:image>
+</apex:facet>
+<apex:inputTextArea value="{!avc.AssVisitComment.Comment__c}" rendered="{!avc.IsNew}" rows="2" style="width: 90%;" id="newT"/> 
+<apex:inputTextArea value="{!avc.AssVisitComment.Comment__c}" rendered="{!avc.IsEdit}" rows="2" style="width: 90%;"/>
+<apex:outputField value="{!avc.AssVisitComment.Comment__c}" rendered="{!avc.IsNoEdit}"/> 
+</apex:column>
+<apex:column headerValue="{!$ObjectType.AssVisitComments__c.fields.IsAssVisit__c.label}"> 
+<apex:outputField value="{!avc.AssVisitComment.IsAssVisit__c}" rendered="{!avc.IsNoEdit}"/>
+<apex:inputField value="{!avc.AssVisitComment.IsAssVisit__c}" rendered="{!avc.IsEdit}"/>
+<apex:inputField value="{!avc.AssVisitComment.IsAssVisit__c}" rendered="{!avc.IsNew}"/>
+</apex:column>
+</apex:pageBlockTable>
+
+</apex:pageBlock>
+<div id="visitHelpDiv" style ="position: absolute; visibility: hidden;z-index:100;right: 100px;top: 0px;">
+    <apex:image id="theImage" value="{!$Resource.VisitHelp}" width="200" height="300"/>
+</div>
+<div id="helpDiv" style ="position: absolute;font-family: 微软雅黑;  background-color:#FEFDB9; visibility: hidden;z-index:100;right: 0px;top: 0px;" class="myDiv">
+    <table cellspacing="0" cellpadding="0" border="1" bordercolor="#E0E3E5" id="table1">
+    <tr class="myTr">
+    <th width="20%" align="center"><span style="color: white;font-weight: bold;" >1分</span></th>
+    <th width="20%" align="center"><span style="color: white;">2分</span></th>
+    <th width="20%" align="center"><span style="color: white;">3分</span></th>
+    <th width="20%" align="center"><span style="color: white;">4分</span></th>
+    <th width="20%" align="center"><span style="color: white;">5分</span></th>
+    </tr>
+    <tr>
+    <td style=" font-weight:normal">未涉及</td>
+    <td style=" font-weight:normal">有待改进</td>
+    <td style=" font-weight:normal">有效</td>
+    <td style=" font-weight:normal">高效</td>
+    <td style=" font-weight:normal">专家</td>
+    </tr>
+    </table>
+    <p></p>
+    <table cellspacing="0" cellpadding="0" border="1" bordercolor="#E0E3E5" id="table2">
+    <tr class="myTr"><th align="char"><span style="color: white;">拜访/协访质量评分内容与标准</span></th></tr>
+    <tr><td style=" font-weight:normal;">1 针对上次访后分析作出计划,设定SMART的目标,并计划相应SPIN的问题,准备充足资料</td></tr>
+    <tr><td style=" font-weight:normal">2 开场:能和客户建立良好的对谈氛围;开场白强调以客户为中心的拜访目的</td></tr>
+    <tr><td style=" font-weight:normal">3 调查:熟练运用SPIN技巧，能灵活运用各类问题挖掘（客户在治疗上所遇到的困难）并发展客户的隐藏需求至明确需求</td></tr>
+    <tr><td style=" font-weight:normal">4 调查:运用需求与回报问题引发客户对解决方案的兴趣</td></tr>
+    <tr><td style=" font-weight:normal">5 显示能力:能准确运用DA或资料等支持证据，强调产品或以改善治疗为核心的解决方案上对客户的效益并满足客户的明确需求</td></tr>
+    <tr><td style=" font-weight:normal">6 取得承诺:回顾总结产品关键信息或所提供的解决方案而产生的效益，提出合理进展;取得客户关于该进展的承诺</td></tr>
+    <tr><td style=" font-weight:normal">7 处理异议:理解并澄清客户异议，提供支持证明材料且确认客户是否接受,能对客户接受程度及反馈进行快速准确的回应，并取得共识</td></tr>
+    </table>
+    </div>
+</apex:form>
+</apex:page>

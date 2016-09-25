@@ -1,0 +1,39 @@
+<apex:page >
+<style>
+        .buttong2y{
+            background-image:none;
+            background: #E6FAFF;
+        }   
+        .buttong2y:hover{
+            background: #45B4FF;
+        }
+    </style>
+    
+    <apex:form style="background-colour:#fdc45b;background-image:none;" >
+        <apex:pageBlock id="pbid"  title="Coaching Data:">
+            <div style="margin:30px 30px 30px 30px">
+                <apex:panelGrid columns="7" rendered="true"><!--{!if(contains(profName,'System Administrator'),true,false)}-->
+                    <!-- First Row -->                 
+                    <apex:commandbutton style="font-size:1.5em;height:80px;color:Navy;font-style:oblique;font-weight:bold;text-align:center; width:190px" styleclass="buttong2y"   value="Coaching Plan" onclick="javascript:window.open('/a2I')"  />
+                    <p style="width:40px"></p>
+                    <apex:commandbutton style="font-size:1.5em;height:80px;color:navy;font-style:oblique;font-weight:bold ;text-align:center; width:190px" styleclass="buttong2y"  value="Plan Detail" onclick="javascript:window.open('/a2H')"  />
+                    
+                </apex:panelGrid>    
+                
+                <p style="height:20px"></p> 
+                <!-- Second Row -->
+                <apex:panelGrid columns="7" rendered="true">           
+                    <apex:commandbutton style="font-size:1.5em;height:80px;color:navy;font-style:oblique;font-weight:bold ;text-align:center; width:190px" styleclass="buttong2y"  value="Coaching Session" onclick="javascript:window.open('/a2J')"  />
+                    <p style="width:40px"></p>
+                    <apex:commandbutton style="font-size:1.5em;height:80px;color:navy;font-style:oblique;font-weight:bold ;text-align:center; width:190px" styleclass="buttong2y"  value="Session Detail" onclick="javascript:window.open('/a2K')"  />
+                </apex:panelGrid>  
+                
+                <p style="height:20px"></p>  
+                <!-- Third Row -->
+                <apex:panelGrid columns="7" rendered="true">  
+                    <apex:commandbutton style="font-size:1.5em;height:80px;color:navy;font-style:oblique;font-weight:bold ;text-align:center; width:190px" styleclass="buttong2y"  value="Coaching Activity" onclick="javascript:window.open('/a2C')"  />
+                </apex:panelGrid>  
+            </div>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

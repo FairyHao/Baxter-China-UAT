@@ -1,0 +1,156 @@
+<apex:page standardController="Coaching_Session__c" extensions="AceSessionPageController"  id="P">
+    <script>
+    // function f(){
+    //     var obj = document.getElementById("p:f:pb");
+    //     obj.focus();
+    // }
+    // window.onload = f;
+
+    // function save(){
+
+    //     var obj1 = document.getElementById('P:f:pb:pb2:it1:va');
+    //     var obj2 = document.getElementById('P:f:pb:pb2:it2:vb');
+
+    //     if (obj1.value == '' && obj2.value == '') {
+    //         if(!window.confirm("访前辅导和访后辅导为空,建议填写(点击取消,忽略该提示直接保存)")){
+
+    //             dosave();
+    //         }
+    //         return;
+    //     };
+    //     if (obj1.value == '') {
+    //         if(!window.confirm("访前辅导未填,建议填写(点击取消,忽略该提示直接保存)")){
+    //             dosave();
+    //         }
+    //         return;
+    //     }
+
+    //     if(obj1.value != '' && obj2.value == ''){
+    //         if(!window.confirm("访后辅导未填,建议填写(点击取消,忽略该提示直接保存)")){
+                
+    //             dosave();
+    //         }
+    //         return;
+    //     }
+
+    //     dosave();
+    // }
+    </script>
+    <apex:form id="f">
+        <apex:actionFunction name="getPlanByUser" action="{!getPlanByUser}" />
+        <!-- <apex:actionFunction name="dosave" action="{!dosave}"/> -->
+        <apex:pageblock id="pb" title="{!if(isCreate,'创建辅导会谈','辅导会谈详细')}">
+            <apex:messages style="color:red"/>
+            <apex:pageBlockButtons >     
+              <!--   <input type="button" class="btn" onclick="" value="保存" style="display: {!IF(isCreate,'','NONE')}" /> -->
+                <apex:commandButton value="保存" action="{!dosave}" rendered="{!isCreate}"/>
+                <apex:commandButton value="取消" rendered="{!isCreate}" action="{!doCancel}"/>  
+                <apex:commandButton value="修改" rendered="{!!isCreate}"  action="{!edit}"/>
+                <apex:commandButton value="返回" rendered="{!!isCreate}"  action="{!doCancel}" />
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection columns="2" title="时间">
+                <apex:inputField value="{!session.startDate__c}"  rendered="{!isCreate}"/>
+                <apex:outputText label="辅导日期:" value="{0,date,yyyy-MM-dd}"  rendered="{!!isCreate}" >
+                    <apex:param value="{!session.startDate__c}" />
+                </apex:outputText>
+                <apex:outputText value="{!plan.Period_1__c}" label="课程所在周期"/>
+                <apex:outputField value="{!session.OwnerId}" rendered="{!!isCreate}"/>
+            </apex:pageBlockSection>   
+
+            <apex:pageBlockSection columns="2" title="被辅导人信息">
+                <apex:selectList label="被辅导人:" size="1" onchange="getPlanByUser()" value="{!userStr}" rendered="{!isCreate}" >
+                    <apex:selectOption itemValue="none" itemLabel="请选择" ></apex:selectOption>
+                    <apex:selectOptions value="{!coachingRelList}" />
+                </apex:selectList>
+                <apex:outputText label="被辅导人:" value="{!session.Rep_Id__r.Alias}"  rendered="{!!isCreate}" />
+                <apex:outputText label="ACE进程:" value="{!count}"/>
+
+                <apex:selectList label="重点领域:"  size="1" value="{!session.FocusText__c}" rendered="{!isCreate}">
+                    <apex:selectOptions value="{!optionList}" />
+                </apex:selectList>
+                <apex:outputText label="重点领域:" value="{!session.FocusText__c}"  rendered="{!!isCreate}" />
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection columns="2" title="辅导人信息" id="pb2">
+                <apex:outputText label="辅导人:" value="{!u.Alias}"/>
+                
+                <apex:pageBlockSectionItem rendered="{!!isCreate}">
+                <b>是否完成:</b><apex:inputCheckbox value="{!session.isCompleted__c}" disabled="true" rendered="{!!isCreate}"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem rendered="{!isCreate}" id="it1">
+                    目标<img src="{!$Resource.helpText}" height="15" width="15" title="{!tip1}" style="vertical-align:middle" />:
+                    <apex:inputField value="{!session.VisitBefore__c}" label=""  id="va" style="width:450px"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!!isCreate}" >
+                    目标<img src="{!$Resource.helpText}" height="15" width="15" title="{!tip1}" style="vertical-align:middle" />:
+                    <apex:outputText value="{!session.VisitBefore__c}"  label="" style="width:450px"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem rendered="{!isCreate}" id="it3">
+                    计划<img src="{!$Resource.helpText}" height="15" width="15" title="{!tip3}"  style="vertical-align:middle" />:
+                    <apex:inputField value="{!session.VisitPlan__c}"  label="" style="width:450px"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!!isCreate}" >
+                    计划<img src="{!$Resource.helpText}" height="15" width="15" title="{!tip3}" style="vertical-align:middle" />:
+                    <apex:outputText value="{!session.VisitPlan__c}"  label="" style="width:450px"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem rendered="{!isCreate}" id="it2">
+                    回顾<img src="{!$Resource.helpText}" height="15" width="15" title="{!tip2}" style="vertical-align:middle" />:
+                    <apex:inputField value="{!session.VisitAfter__c}"  label=""  id="vb" style="width:450px"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem rendered="{!!isCreate}">
+                    回顾<img src="{!$Resource.helpText}" height="15" width="15" title="{!tip2}" style="vertical-align:middle" />:
+                    <apex:outputText value="{!session.VisitAfter__c}" style="width:450px"  />
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection columns="1" title="被辅导人近1月辅导会谈">
+                <apex:pageBlockTable value="{!coachingRelatedList}" var="item">
+                    <apex:column >
+                        <apex:facet name="header">Name</apex:facet>
+                        <a href="/{!item.id}" target="_blank">{!item.Name}</a>
+                    </apex:column>
+                    <apex:column headervalue="代表姓名" value="{!item.Rep_Id__r.Alias}"/>
+                    <apex:column headervalue="开始日期" value="{!item.startDate__c}"/>
+                    <apex:column headervalue="重点领域" value="{!item.FocusText__c}"/>
+                    <apex:column headervalue="目标" value="{!item.VisitBefore__c}"/>
+                    <apex:column headerValue="计划" value="{!item.VisitPlan__c}"/>
+                    <apex:column headervalue="回顾" value="{!item.VisitAfter__c}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection columns="1" title="当前SM近1月辅导SR的会谈" rendered="{!!isSR}">
+                <apex:pageBlockTable value="{!coachingRelatedSRList}" var="item">
+                    <apex:column >
+                        <apex:facet name="header">Name</apex:facet>
+                        <a href="/{!item.id}" target="_blank">{!item.Name}</a>
+                    </apex:column>
+                    <apex:column headervalue="代表姓名" value="{!item.Rep_Id__r.Alias}"/>
+                    <apex:column headervalue="开始日期" value="{!item.startDate__c}"/>
+                    <apex:column headervalue="重点领域" value="{!item.FocusText__c}"/>
+                    <apex:column headervalue="目标" value="{!item.VisitBefore__c}"/>
+                    <apex:column headerValue="计划" value="{!item.VisitPlan__c}"/>
+                    <apex:column headervalue="回顾" value="{!item.VisitAfter__c}"/>
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1" title="SR协访列表" rendered="{!isSR}">
+                <apex:pageBlockTable value="{!coachingRelatedEventList}" var="item">
+                    <apex:column >
+                        <apex:facet name="header">主题</apex:facet>
+                        <a href="/{!item.id}" target="_blank">{!item.Subject}</a>
+                    </apex:column>
+                    <apex:column headervalue="开始日期" value="{!item.StartDateTime}"/>
+                    <apex:column headervalue="结束日期" value="{!item.EndDateTime}"/>
+                    <apex:column headervalue="被分配人" value="{!item.Owner.Name}"/>
+                    <apex:column headervalue="计划" value="{!item.GAPlan__c}"/>
+                    <apex:column headervalue="结果分析" value="{!item.GAExecuteResult__c}"/>
+                    <apex:column headervalue="完成" value="{!item.Done__c}"/>
+                    <apex:column headervalue="评语" value="{!item.Comment1__c}"/>
+
+                </apex:pageBlockTable>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,12 @@
+<apex:page standardController="Event" extensions="Bios_VabletFileController" tabStyle="Event" sidebar="false" showHeader="false">
+    <apex:pageBlock title="">
+    	<apex:pageBlockTable value="{!vabletFileList}" var="obj" >
+    		<apex:column headerValue="序号">
+    			<apex:outputText value="{!obj.index}"></apex:outputText>
+    		</apex:column>
+    		<apex:column headerValue="文件名">
+    			<a href="{!obj.vab.Vab_VabletFileLink__c}">{!obj.vab.name}</a>
+    		</apex:column>
+    	</apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

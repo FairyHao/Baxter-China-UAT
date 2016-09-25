@@ -1,0 +1,107 @@
+<apex:page tabStyle="Contact_Mod__c" standardController="Contact_Mod__c" extensions="BQ_CtrAddContact" id="mypage" >
+
+<apex:form id="myform">  
+	<apex:pagemessages />
+	<apex:actionFunction action="{!getContactInfo}" name="getContactInfoJs" reRender="Section2" status="ChangeOption"/>
+	<apex:sectionHeader title="新增联系人修改申请" subtitle="选取联系人修改申请记录类型" description="选取 新增联系人修改申请的记录类型。" rendered="{!IsPage1}"/> 
+	<apex:pageblock title="选取联系人修改申请记录类型" rendered="{!IsPage1}">
+		<apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!PageContinue}" value="继续" reRender="myform" status="Continue" disabled="{!IsLock}"/>
+                <apex:commandButton action="{!Cancel}" value="取消" status="saveStatus"/>
+                <apex:actionStatus id="Continue">
+	                <apex:facet name="start">
+	                    <apex:image id="messageIcon" value="{!$Resource.AjaxAnimation}" />
+	                </apex:facet>
+	                <apex:facet name="stop">
+	                </apex:facet>
+	            </apex:actionStatus>
+         </apex:pageBlockButtons>
+		<apex:pageBlockSection columns="2" showHeader="false">
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="新增记录的记录类型" for="RT__name"/>
+            <apex:selectList size="1" value="{!RtDevName}" id="RT_name" required="true">
+ 				<apex:selectOptions value="{!RecordTypelist}" />
+ 		  	</apex:selectList>
+			</apex:pageBlockSectionItem>
+		</apex:pageBlockSection>
+	</apex:pageblock>
+<!--	编辑界面-->
+	<apex:sectionHeader subtitle="编辑：联系人修改申请"  rendered="{!IsPage2}"/> 
+	<apex:pageblock title="联系人申请编辑"  rendered="{!IsPage2}">
+		<apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!SaveContactMod}" value="保存并提交审批" status="saveStatus2" disabled="{!IsLock}" reRender="myform"  />
+                <apex:actionStatus id="saveStatus2">
+	                <apex:facet name="start2">
+	                    <apex:image id="messageIcon2" value="{!$Resource.AjaxAnimation}" />
+	                </apex:facet>
+	                <apex:facet name="stop2">
+	                </apex:facet>
+	            </apex:actionStatus>
+                <apex:commandButton action="{!Cancel}" value="取消"/>
+         </apex:pageBlockButtons>
+		<apex:pageBlockSection columns="2" title="申请模式" collapsible="false">
+			<apex:outputfield value="{!curContact.Type__c}" />
+    		<apex:outputfield value="{!curContact.Account__c}"/>
+    		<apex:pageBlockSectionItem rendered="{!IsEdit}">
+        		<apex:outputLabel value="选择要修改联系人" for="Con__name"/>
+        		<apex:selectList size="1"  value="{!contactId}"  Onchange="getContactInfoJs()" Id="Con_name">
+		            <apex:selectOptions value="{!ContactOption}"/>
+		        </apex:selectList>
+		   	</apex:pageBlockSectionItem>
+		   	<apex:actionStatus id="ChangeOption">
+                <apex:facet name="start">
+                    <apex:image id="messageIcon" value="{!$Resource.AjaxAnimation}" />
+                </apex:facet>
+                <apex:facet name="stop">
+                </apex:facet>
+            </apex:actionStatus>
+		</apex:pageBlockSection>
+		<apex:outputPanel id="Section2">
+			<apex:pageBlockSection columns="2" title="联系人信息" collapsible="false">
+				<apex:inputfield value="{!curContact.NewContact__c}" required="true"/>
+				<apex:inputfield value="{!curContact.Phone__c}"/>
+				<apex:inputfield value="{!curContact.Gender__c}" style="width:150px;" required="true"/>
+				<apex:inputfield value="{!curContact.Mobile__c}"/>
+				<!--<apex:inputfield value="{!curContact.Contact_Type__c}" style="width:150px;"/>-->
+				<apex:inputfield value="{!curContact.Fax__c}"/>
+				<apex:inputfield value="{!curContact.V2_OfficerNo__c}"/>
+				<apex:inputfield value="{!curContact.Email__c}"/>
+				<apex:inputfield value="{!curContact.V2_PassPortNo__c}"/>
+				<apex:inputfield value="{!curContact.Birthday__c}" style="width:147px;"/>
+				<apex:inputfield value="{!curContact.Graduate_College__c}"/>
+				<apex:inputfield value="{!curContact.ID_card2__c}"/>
+				<apex:inputfield value="{!curContact.BQ_Job__c}" style="width:150px;"/>
+				<apex:inputfield value="{!curContact.V2_interest__c}" style="width:148px;"/>
+				<apex:inputfield value="{!curContact.Comment__c}" style="width:148px;"/>
+			</apex:pageBlockSection> 
+            <!--	其他信息		-->
+            <apex:pageBlockSection columns="2" title="BQ" collapsible="false">
+<!--           		<apex:inputfield value="{!curContact.V2_RenalGrade__c}" style="width:160px;"/>-->
+           		<apex:inputfield value="{!curContact.BQ_CampaignType__c}" style="width:160px;" required="true"/>
+           		<!--<apex:inputfield value="{!curContact.BQ_Administrative_level__c}" style="width:160px;"/>-->
+           		<apex:inputfield value="{!curContact.BQ_RateTitle__c}" style="width:160px;"/> 
+           		<apex:inputfield value="{!curContact.BQ_Education__c}" style="width:160px;"/>
+           		<!--<apex:inputfield value="{!curContact.BQ_Academic_status__c}" style="width:160px;"/>-->
+           		<!--<apex:inputfield value="{!curContact.BQ_Beds_turnover_days__c}" style="width:160px;"/>-->
+           		<!--<apex:inputfield value="{!curContact.BQ_RateBeds__c}" style="width:160px;"/>-->
+           		<apex:inputfield value="{!curContact.BQ_Nutritional_habits__c}" style="width:160px;"/>
+           		<!--<apex:inputfield value="{!curContact.BQ_Nutrition_proportion__c}" style="width:160px;"/>-->
+           		<!--<apex:inputfield value="{!curContact.BQ_Relationship__c}" style="width:160px;"/>-->
+           		<!--<apex:inputfield value="{!curContact.BQ_Business_scale__c}" style="width:160px;"/>-->
+           		<apex:inputfield value="{!curContact.BQ_Presentation_skills__c}" style="width:160px;"/>
+				<apex:inputfield value="{!curContact.BQ_RateLeadership__c}" style="width:160px;"/>
+				<!--<apex:inputfield value="{!curContact.BQ_Companies_cooperation__c}" style="width:160px;"/>-->
+           		<apex:inputfield value="{!curContact.BQ_Choose_fat__c}" />
+           		<apex:inputfield value="{!curContact.BQ_Selective_fat__c}" />
+				<!--<apex:inputfield value="{!curContact.BQ_Research_expertise__c}" style="width:160px;"/>-->
+				<apex:inputfield value="{!curContact.V2_DepartmentType__c}" style="width:160px;" required="true"/>
+				<apex:inputfield value="{!curContact.IsTalker__c}" rendered="{!!IsTalkIsLock}"/>
+				<apex:outputField value="{!curContact.IsTalker__c}" rendered="{!IsTalkIsLock}"/>
+				<apex:inputfield value="{!curContact.BQ_Beds__c}"/>
+				<apex:inputfield value="{!curContact.ParenteralNutrition__c}" required="true"/>
+				<apex:inputfield value="{!curContact.BQ_BQ__c}" required="true"/>
+			</apex:pageBlockSection>
+		</apex:outputPanel>
+	</apex:pageblock>
+</apex:form>
+</apex:page>
